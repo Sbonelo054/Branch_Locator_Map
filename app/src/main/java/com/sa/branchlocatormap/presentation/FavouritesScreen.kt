@@ -1,0 +1,161 @@
+package com.sa.branchlocatormap.presentation
+
+import androidx.compose.runtime.Composable
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.sa.branchlocatormap.domain.BankBranchDetail
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FavouritesScreen(onBranchClick:() -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            Text(
+                text = "Favourites",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        BankBranchScreen(onBranchClick)
+    }
+}
+
+// ----------------------
+// Main List Composable
+// ----------------------
+@Composable
+fun BankBranchList(onBranchClick: () -> Unit, branches: List<BankBranchDetail>) {
+    LazyColumn(
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(branches) { branch ->
+            BankBranchItem(onBranchClick = onBranchClick, branch = branch)
+        }
+    }
+}
+
+// ----------------------
+// Item UI
+// ----------------------
+@Composable
+fun BankBranchItem(onBranchClick: () -> Unit, branch: BankBranchDetail) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onBranchClick()
+            },
+        shape = MaterialTheme.shapes.large,
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+
+            // Top Row: Name + Status
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = branch.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = if (branch.isOpen) "Open" else "Closed",
+                    color = if (branch.isOpen)
+                        Color(0xFF2E7D32)
+                    else
+                        MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            // Address
+            Text(
+                text = branch.address,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Bottom Row: Distance + CTA
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                // Distance pill
+                Surface(
+                    shape = MaterialTheme.shapes.extraLarge,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                ) {
+                    Text(
+                        text = branch.distance,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                Text(
+                    text = "View Details →",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun BankBranchScreen(onBranchClick: () -> Unit){
+    val branches = listOf(
+        BankBranchDetail("Standard Bank - Sandton", "123 Rivonia Rd", "1.2 km", true),
+        BankBranchDetail("FNB - Rosebank", "45 Oxford Rd", "2.5 km", false),
+        BankBranchDetail("Absa - Melrose Arch", "10 High St", "3.1 km", true),
+        BankBranchDetail("Nedbank - Hyde Park", "88 Jan Smuts Ave", "4.0 km", true),
+        BankBranchDetail("Absa - Melrose Arch", "10 High St", "3.1 km", true),
+        BankBranchDetail("Absa - Melrose Arch", "10 High St", "3.1 km", false),
+        BankBranchDetail("Absa - Melrose Arch", "10 High St", "3.1 km", true))
+
+    BankBranchList(onBranchClick = onBranchClick, branches = branches)
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BankBranchScreenPreview() {
+    val branches = listOf(
+        BankBranchDetail("Standard Bank - Sandton", "123 Rivonia Rd", "1.2 km", true),
+        BankBranchDetail("FNB - Rosebank", "45 Oxford Rd", "2.5 km", false),
+        BankBranchDetail("Absa - Melrose Arch", "10 High St", "3.1 km", true),
+        BankBranchDetail("Nedbank - Hyde Park", "88 Jan Smuts Ave", "4.0 km", true)
+    )
+
+    MaterialTheme {
+        BankBranchList(onBranchClick = {}, branches = branches)
+    }
+}
