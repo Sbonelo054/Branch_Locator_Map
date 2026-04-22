@@ -75,6 +75,7 @@ dependencies {
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
     implementation(libs.room.common)
+    implementation(libs.gson)
 
 // Google maps Compose
     implementation(libs.maps.compose)
