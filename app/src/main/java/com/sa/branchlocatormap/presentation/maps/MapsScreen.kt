@@ -2,13 +2,21 @@ package com.sa.branchlocatormap.presentation.maps
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.net.Uri
 import android.os.Looper
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -60,6 +68,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.sa.branchlocatormap.R
 import kotlinx.coroutines.launch
 import androidx.core.graphics.createBitmap
+import com.sa.branchlocatormap.domain.BankBranchDetail
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,6 +84,26 @@ fun MapsScreen(modifier: Modifier = Modifier) {
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(sandton, 10f)
+    }
+
+    val infiniteTransition = rememberInfiniteTransition(label = "markerPulse")
+
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.25f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(700, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale"
+    )
+
+    val animatedIcon = remember(scale) {
+        createMarkerIcon(
+            context = context,
+            resId = R.drawable.ic_bank,
+            scale = scale
+        )
     }
 
     val markerIcon = remember {
@@ -151,12 +180,12 @@ fun MapsScreen(modifier: Modifier = Modifier) {
                 myLocationButtonEnabled = true
             )
         ) {
-            sandtonAreas.forEach { area ->
+            branches.forEach { area ->
                 Marker(
-                    state = MarkerState(position = area.location),
+                    state = MarkerState(position = LatLng(area.latitude, area.longitude)),
                     title = area.name,
                     snippet = "Sandton Area",
-                    icon = markerIcon
+                    icon = animatedIcon
                 )
             }
         }
@@ -168,6 +197,26 @@ fun MapsScreen(modifier: Modifier = Modifier) {
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .align(Alignment.TopCenter)
         )
+    }
+}
+
+fun openGoogleMapsNavigation(context: Context, lat: Double, lng: Double) {
+    val uri = Uri.parse("google.navigation:q=$lat,$lng")
+
+    val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+        setPackage("com.google.android.apps.maps") // ensures Google Maps opens
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+
+    try {
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        e.printStackTrace()
+
+        // fallback if Google Maps isn't installed
+        val fallbackUri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=$lat,$lng")
+        val fallbackIntent = Intent(Intent.ACTION_VIEW, fallbackUri)
+        context.startActivity(fallbackIntent)
     }
 }
 
@@ -194,6 +243,26 @@ fun createMarkerIcon(
     return BitmapDescriptorFactory.fromBitmap(bitmap)
 }
 
+fun createMarkerIcon(
+    context: Context,
+    @DrawableRes resId: Int,
+    scale: Float = 1f
+): BitmapDescriptor {
+
+    val drawable = ContextCompat.getDrawable(context, resId)
+        ?: return BitmapDescriptorFactory.defaultMarker()
+
+    val width = (drawable.intrinsicWidth * scale).toInt().coerceAtLeast(1)
+    val height = (drawable.intrinsicHeight * scale).toInt().coerceAtLeast(1)
+
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+
+    drawable.setBounds(0, 0, canvas.width, canvas.height)
+    drawable.draw(canvas)
+
+    return BitmapDescriptorFactory.fromBitmap(bitmap)
+}
 @Composable
 fun BranchSearchBar(modifier: Modifier = Modifier) {
 
@@ -234,20 +303,15 @@ fun BranchSearchBar(modifier: Modifier = Modifier) {
     }
 }
 
-data class SandtonArea(
-    val name: String,
-    val location: LatLng
-)
-
-val sandtonAreas = listOf(
-    SandtonArea("Sandton City", LatLng(-26.1076, 28.0567)),
-    SandtonArea("Nelson Mandela Square", LatLng(-26.1079, 28.0569)),
-    SandtonArea("Rosebank Mall", LatLng(-26.1456, 28.0436)),
-    SandtonArea("Morningside", LatLng(-26.0937, 28.0583)),
-    SandtonArea("Bryanston", LatLng(-26.0489, 28.0287)),
-    SandtonArea("Benmore Gardens", LatLng(-26.1024, 28.0618)),
-    SandtonArea("Grayston Drive", LatLng(-26.0975, 28.0542)),
-    SandtonArea("Illovo", LatLng(-26.1302, 28.0516)),
-    SandtonArea("Woodmead", LatLng(-26.0449, 28.1021)),
-    SandtonArea("Rivonia", LatLng(-26.0535, 28.0590))
+val branches = listOf(
+    BankBranchDetail(name="Sandton City", latitude = -26.1076, longitude = 28.0567),
+    BankBranchDetail("Nelson Mandela Square", latitude = -26.1079,longitude = 28.0569),
+    BankBranchDetail("Rosebank Mall", latitude = -26.1456,longitude = 28.0436),
+    BankBranchDetail("Morningside", latitude = -26.0937,longitude = 28.0583),
+    BankBranchDetail("Bryanston", latitude =-26.0489,longitude= 28.0287),
+    BankBranchDetail("Benmore Gardens", latitude = -26.1024, longitude=28.0618),
+    BankBranchDetail("Grayston Drive", latitude = -26.0975,longitude = 28.0542),
+    BankBranchDetail("Illovo", latitude = -26.1302, longitude =28.0516),
+    BankBranchDetail("Woodmead", latitude = -26.0449,longitude = 28.1021),
+    BankBranchDetail("Rivonia", latitude = -26.0535,longitude = 28.0590)
 )

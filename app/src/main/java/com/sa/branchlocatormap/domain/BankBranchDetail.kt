@@ -13,6 +13,8 @@ data class BankBranchDetail(
     val closeTime: String = "",
     val phone: String = "",
     val services: List<String> = listOf(),
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0
 )
