@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.android.gms.maps.MapsInitializer
+import com.sa.branchlocatormap.presentation.maps.MapsScreen
 import com.sa.branchlocatormap.ui.theme.BranchLocatorMapTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,7 +30,6 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     } else {
-
                         MainScreen()
                     }
 
@@ -42,6 +42,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     BranchLocatorMapTheme {
-        MapScreen()
+        MapsScreen()
     }
 }

@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.room.common)
     implementation(libs.gson)
+    implementation(libs.play.services.location)
 
 // Google maps Compose
     implementation(libs.maps.compose)

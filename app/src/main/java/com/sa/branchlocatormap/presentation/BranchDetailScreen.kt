@@ -1,5 +1,12 @@
 package com.sa.branchlocatormap.presentation
 
+import android.Manifest
+import android.R.attr.data
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -18,7 +25,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.sa.branchlocatormap.domain.BankBranchDetail
+import androidx.core.net.toUri
 
 
 // ----------------------
@@ -117,7 +128,7 @@ fun BranchDetailScreen() {
         // ----------------------
         // ACTION BUTTONS
         // ----------------------
-        ActionButtons()
+        ActionButtons(branch)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -250,7 +261,8 @@ fun DetailRow(icon: androidx.compose.ui.graphics.vector.ImageVector, title: Stri
 // Action Buttons
 // ----------------------
 @Composable
-fun ActionButtons() {
+fun ActionButtons(branchDetail: BankBranchDetail) {
+    val context = LocalContext.current
     Row(
         Modifier
             .fillMaxWidth()
@@ -266,9 +278,25 @@ fun ActionButtons() {
             Spacer(modifier = Modifier.width(6.dp))
             Text("Directions")
         }
-
+        val callPermissionLauncher = rememberLauncherForActivityResult(
+            contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                makeDirectCall(context, branchDetail.phone)
+            }
+        }
         OutlinedButton(
-            onClick = {},
+            onClick = {
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.CALL_PHONE
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    makeDirectCall(context, branchDetail.phone)
+                } else {
+                    callPermissionLauncher.launch(Manifest.permission.CALL_PHONE)
+                }
+            },
             modifier = Modifier.weight(1f)
         ) {
             Icon(Icons.Default.Call, null)
@@ -325,6 +353,15 @@ fun ServiceChip(text: String) {
             style = MaterialTheme.typography.labelMedium
         )
     }
+}
+
+fun makeDirectCall(context: Context, phoneNumber: String) {
+    val intent = Intent(Intent.ACTION_CALL).apply {
+        data = Uri.parse("tel:${phoneNumber.trim()}")
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+
+    context.startActivity(intent)
 }
 
 // ----------------------

@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.sa.branchlocatormap.presentation.maps.MapsScreen
 import com.sa.branchlocatormap.presentation.navigation.BottomNavItemScreen
 import com.sa.branchlocatormap.presentation.navigation.Screen
 
@@ -75,7 +76,7 @@ fun MainScreen() {
         ) {
 
             composable(BottomNavItemScreen.Map.route) {
-                MapScreen()
+                MapsScreen()
             }
 
             composable(BottomNavItemScreen.Favourites.route) {

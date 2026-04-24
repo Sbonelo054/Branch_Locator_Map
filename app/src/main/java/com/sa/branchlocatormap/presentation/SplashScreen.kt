@@ -21,9 +21,7 @@ fun SplashScreen(
     onNavigateToMain: () -> Unit
 ) {
 
-    // ----------------------
-    // ANIMATION STATES
-    // ----------------------
+
     var startAnimation by remember { mutableStateOf(false) }
 
     val scaleAnim by animateFloatAsState(
@@ -41,18 +39,12 @@ fun SplashScreen(
         animationSpec = tween(durationMillis = 800)
     )
 
-    // ----------------------
-    // LAUNCH EFFECT
-    // ----------------------
     LaunchedEffect(true) {
         startAnimation = true
         delay(2200)
         onNavigateToMain()
     }
 
-    // ----------------------
-    // UI
-    // ----------------------
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -71,9 +63,6 @@ fun SplashScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // ----------------------
-            // ICON
-            // ----------------------
             Icon(
                 imageVector = Icons.Default.AccountBalance,
                 contentDescription = null,
@@ -86,9 +75,6 @@ fun SplashScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ----------------------
-            // TEXT
-            // ----------------------
             Text(
                 text = "Branch Locator",
                 style = MaterialTheme.typography.headlineMedium,
