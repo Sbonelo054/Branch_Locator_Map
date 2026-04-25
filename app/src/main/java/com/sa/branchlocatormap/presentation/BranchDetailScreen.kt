@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.compose.material.icons.filled.*
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -74,7 +76,7 @@ fun BranchDetailScreen(navController: NavController) {
     }
 
     val branch = selectedBranch?: return
-    var isFavourite by remember { mutableStateOf(true) }
+    var isFavourite by remember { mutableStateOf(branch.isFavourite) }
 
     Column(
         modifier = Modifier
@@ -119,10 +121,12 @@ fun BranchDetailScreen(navController: NavController) {
                     IconButton(
                         onClick = {
                             isFavourite = !isFavourite
-                            if (isFavourite) {
-                                favouritesViewModel.addFavourite(branch)
+                            val updatedBranch = branch.copy(isFavourite = !branch.isFavourite)
+
+                            if (updatedBranch.isFavourite) {
+                                favouritesViewModel.addFavourite(updatedBranch)
                             } else {
-                                favouritesViewModel.deleteFavourite(branch)
+                                favouritesViewModel.deleteFavourite(updatedBranch)
                             }
                         },
                         modifier = Modifier
@@ -183,10 +187,38 @@ fun BranchDetailScreen(navController: NavController) {
                     fontWeight = FontWeight.SemiBold
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
-                branch?.services?.forEach {
-                    ServiceChip(it)
+                val services = branch.services
+
+                if (services.isEmpty()) {
+                    Text(
+                        "No services available",
+                        color = Color.Gray,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                } else {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        services.chunked(2).forEach { rowItems ->
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                rowItems.forEach { service ->
+                                    ModernServiceTile(
+                                        text = service,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+
+                                if (rowItems.size == 1) {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -339,18 +371,86 @@ fun OpeningHourRow(day: String, time: String, highlight: Boolean) {
 }
 
 @Composable
-fun ServiceChip(text: String) {
-    Surface(
-        shape = MaterialTheme.shapes.extraLarge,
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        modifier = Modifier
-            .padding(4.dp)
+fun ModernServiceTile(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    val icon = getServiceIcon(text)
+
+    Card(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+        colors = androidx.compose.material3.CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = cardElevation(2.dp)
     ) {
-        Text(
-            text,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            style = MaterialTheme.typography.labelMedium
-        )
+        Row(
+            modifier = Modifier
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            // Icon container (modern rounded square)
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        MaterialTheme.shapes.small
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column {
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Text(
+                    text = "Available service",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.Gray
+                )
+            }
+        }
+    }
+}
+
+fun getServiceIcon(service: String): ImageVector {
+    return when (service.lowercase()) {
+
+        "atm" -> Icons.Default.LocalAtm
+        "loans" -> Icons.Default.AttachMoney
+        "loan" -> Icons.Default.AttachMoney
+
+        "card services" -> Icons.Default.CreditCard
+        "credit cards" -> Icons.Default.CreditCard
+
+        "forex" -> Icons.Default.CurrencyExchange
+        "currency exchange" -> Icons.Default.CurrencyExchange
+
+        "parking" -> Icons.Default.LocalParking
+        "wifi" -> Icons.Default.Wifi
+        "drive through" -> Icons.Default.DriveEta
+
+        "banking" -> Icons.Default.AccountBalance
+        "insurance" -> Icons.Default.Shield
+
+        "investment" -> Icons.Default.TrendingUp
+
+        else -> Icons.Default.Savings
     }
 }
 
@@ -364,8 +464,6 @@ fun makeDirectCall(context: Context, phoneNumber: String) {
 }
 
 fun openGoogleMapsNavigation(context: Context, lat: Double, lng: Double) {
-
-    // Primary: turn-by-turn navigation
     val gmIntentUri = Uri.parse("google.navigation:q=$lat,$lng")
 
     val mapIntent = Intent(Intent.ACTION_VIEW, gmIntentUri).apply {
@@ -377,7 +475,6 @@ fun openGoogleMapsNavigation(context: Context, lat: Double, lng: Double) {
         context.startActivity(mapIntent)
     } catch (e: Exception) {
 
-        // Fallback 1: generic geo intent
         val geoUri = Uri.parse("geo:$lat,$lng?q=$lat,$lng")
 
         val fallbackIntent = Intent(Intent.ACTION_VIEW, geoUri).apply {

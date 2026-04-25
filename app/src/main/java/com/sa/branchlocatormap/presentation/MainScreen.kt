@@ -20,6 +20,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.sa.branchlocatormap.presentation.navigation.BottomNavItemScreen
 import com.sa.branchlocatormap.presentation.navigation.Screen
+import com.sa.branchlocatormap.presentation.viewModel.BranchSharedViewModel
+import org.koin.androidx.compose.koinViewModel
 
 val items = listOf(
     BottomNavItemScreen.Map,
@@ -78,8 +80,10 @@ fun MainScreen() {
             }
 
             composable(BottomNavItemScreen.Favourites.route) {
+                val sharedViewModel: BranchSharedViewModel = koinViewModel()
                 FavouritesScreen(
-                    onBranchClick = {
+                    onBranchClick = { branch ->
+                        sharedViewModel.selectBranch(branch)
                         navController.navigate(Screen.BRANCH_DETAIL)
                     }
                 )

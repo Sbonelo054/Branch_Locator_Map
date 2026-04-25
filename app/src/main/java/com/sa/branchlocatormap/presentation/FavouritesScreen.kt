@@ -20,7 +20,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavouritesScreen(onBranchClick:() -> Unit) {
+fun FavouritesScreen(onBranchClick:(BankBranchDetail) -> Unit) {
     val favouritesViewModel: FavouritesViewModel = koinViewModel()
     val favouritesState by favouritesViewModel.favouriteUiState.collectAsState()
 
@@ -45,7 +45,7 @@ fun FavouritesScreen(onBranchClick:() -> Unit) {
 }
 
 @Composable
-fun BankBranchList(onBranchClick: () -> Unit, branches: List<BankBranchDetail>) {
+fun BankBranchList(onBranchClick: (BankBranchDetail) -> Unit, branches: List<BankBranchDetail>) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -57,12 +57,12 @@ fun BankBranchList(onBranchClick: () -> Unit, branches: List<BankBranchDetail>) 
 }
 
 @Composable
-fun BankBranchItem(onBranchClick: () -> Unit, branch: BankBranchDetail) {
+fun BankBranchItem(onBranchClick: (BankBranchDetail) -> Unit, branch: BankBranchDetail) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                onBranchClick()
+                onBranchClick(branch)
             },
         shape = MaterialTheme.shapes.large,
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
@@ -133,9 +133,10 @@ fun BankBranchItem(onBranchClick: () -> Unit, branch: BankBranchDetail) {
 }
 
 @Composable
-fun BankBranchScreen(onBranchClick: () -> Unit, branches: List<BankBranchDetail>){
+fun BankBranchScreen(onBranchClick: (BankBranchDetail) -> Unit, branches: List<BankBranchDetail>){
 
     BankBranchList(onBranchClick = onBranchClick, branches = branches)
+
 }
 
 @Preview(showBackground = true)

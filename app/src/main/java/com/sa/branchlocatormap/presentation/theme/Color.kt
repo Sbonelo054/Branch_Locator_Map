@@ -1,4 +1,4 @@
-package com.sa.branchlocatormap.ui.theme
+package com.sa.branchlocatormap.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
