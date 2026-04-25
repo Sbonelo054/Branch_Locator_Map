@@ -87,6 +87,14 @@ fun MapsScreen(modifier: Modifier = Modifier, navController: NavController) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
+    var navigateToDetail by remember { mutableStateOf(false) }
+    LaunchedEffect(navigateToDetail) {
+        if (navigateToDetail) {
+            navController.navigate(Screen.BRANCH_DETAIL)
+            navigateToDetail = false
+        }
+    }
+
     val fusedLocationClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
     }
@@ -123,7 +131,6 @@ fun MapsScreen(modifier: Modifier = Modifier, navController: NavController) {
 
     var hasPermission by remember { mutableStateOf(false) }
     var currentLocation by remember { mutableStateOf<LatLng?>(null) }
-
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -180,7 +187,7 @@ fun MapsScreen(modifier: Modifier = Modifier, navController: NavController) {
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        var navigateToDetail by remember { mutableStateOf(false) }
+
         GoogleMap(
             modifier = Modifier.matchParentSize(),
             cameraPositionState = cameraPositionState,
@@ -193,12 +200,7 @@ fun MapsScreen(modifier: Modifier = Modifier, navController: NavController) {
         ) {
 
             branches.forEachIndexed { index, area ->
-                LaunchedEffect(navigateToDetail) {
-                    if (navigateToDetail) {
-                        navController.navigate(Screen.BRANCH_DETAIL)
-                        navigateToDetail = false
-                    }
-                }
+
 
                 Marker(
                     state = MarkerState(position = LatLng(area.latitude, area.longitude)),
@@ -233,27 +235,6 @@ fun MapsScreen(modifier: Modifier = Modifier, navController: NavController) {
         )
     }
 }
-
-fun openGoogleMapsNavigation(context: Context, lat: Double, lng: Double) {
-    val uri = "google.navigation:q=$lat,$lng".toUri()
-
-    val intent = Intent(Intent.ACTION_VIEW, uri).apply {
-        setPackage("com.google.android.apps.maps")
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    }
-
-    try {
-        context.startActivity(intent)
-    } catch (e: Exception) {
-        e.printStackTrace()
-
-        // fallback if Google Maps isn't installed
-        val fallbackUri = "https://www.google.com/maps/dir/?api=1&destination=$lat,$lng".toUri()
-        val fallbackIntent = Intent(Intent.ACTION_VIEW, fallbackUri)
-        context.startActivity(fallbackIntent)
-    }
-}
-
 
 fun createMarkerIcon(
     context: Context,
@@ -335,208 +316,3 @@ fun BranchSearchBar(query: String,
         }
     }
 }
-
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun MapsScreen(
-//    modifier: Modifier = Modifier,
-//    navController: NavController
-//) {
-//    val context = LocalContext.current
-//    val scope = rememberCoroutineScope()
-//
-//    val fusedLocationClient = remember {
-//        LocationServices.getFusedLocationProviderClient(context)
-//    }
-//
-//    val sandton = LatLng(-26.1076, 28.0567)
-//
-//    val cameraPositionState = rememberCameraPositionState {
-//        position = CameraPosition.fromLatLngZoom(sandton, 10f)
-//    }
-//
-//    val infiniteTransition = rememberInfiniteTransition(label = "markerPulse")
-//
-//    val scale by infiniteTransition.animateFloat(
-//        initialValue = 1f,
-//        targetValue = 1.25f,
-//        animationSpec = infiniteRepeatable(
-//            animation = tween(700, easing = FastOutSlowInEasing),
-//            repeatMode = RepeatMode.Reverse
-//        ),
-//        label = "scale"
-//    )
-//
-//    val animatedIcon = remember(scale) {
-//        createMarkerIcon(
-//            context = context,
-//            resId = R.drawable.ic_bank,
-//            scale = scale
-//        )
-//    }
-//
-//    val markerIcon = remember {
-//        createMarkerIcon(context, R.drawable.ic_bank)
-//    }
-//
-//    var hasPermission by remember { mutableStateOf(false) }
-//    var currentLocation by remember { mutableStateOf<LatLng?>(null) }
-//
-//    val permissionLauncher = rememberLauncherForActivityResult(
-//        ActivityResultContracts.RequestPermission()
-//    ) { granted ->
-//        hasPermission = granted
-//    }
-//
-//    LaunchedEffect(Unit) {
-//        permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-//    }
-//
-//    val locationRequest = remember {
-//        LocationRequest.Builder(
-//            Priority.PRIORITY_HIGH_ACCURACY,
-//            3000
-//        ).setMinUpdateIntervalMillis(1500).build()
-//    }
-//
-//    val locationCallback = remember {
-//        object : LocationCallback() {
-//            override fun onLocationResult(result: LocationResult) {
-//                val location = result.lastLocation ?: return
-//                val latLng = LatLng(location.latitude, location.longitude)
-//
-//                currentLocation = latLng
-//
-//                scope.launch {
-//                    cameraPositionState.animate(
-//                        CameraUpdateFactory.newLatLngZoom(latLng, 15f)
-//                    )
-//                }
-//            }
-//        }
-//    }
-//
-//    DisposableEffect(hasPermission) {
-//        if (hasPermission) {
-//            if (ActivityCompat.checkSelfPermission(
-//                    context,
-//                    Manifest.permission.ACCESS_FINE_LOCATION
-//                ) == PackageManager.PERMISSION_GRANTED
-//            ) {
-//                fusedLocationClient.requestLocationUpdates(
-//                    locationRequest,
-//                    locationCallback,
-//                    Looper.getMainLooper()
-//                )
-//            }
-//        }
-//
-//        onDispose {
-//            fusedLocationClient.removeLocationUpdates(locationCallback)
-//        }
-//    }
-//
-//    Box(modifier = modifier.fillMaxSize()) {
-//
-//        // ----------------------
-//        // GOOGLE MAP
-//        // ----------------------
-//        GoogleMap(
-//            modifier = Modifier.matchParentSize(),
-//            cameraPositionState = cameraPositionState,
-//            properties = MapProperties(
-//                isMyLocationEnabled = hasPermission
-//            ),
-//            uiSettings = MapUiSettings(
-//                myLocationButtonEnabled = true
-//            )
-//        ) {
-//
-//            branches.forEach { branch ->
-//
-//                val position = LatLng(branch.latitude, branch.longitude)
-//
-//                MarkerInfoWindowContent(
-//                    state = rememberMarkerState(position = position),
-//                    icon = markerIcon,
-//                    onClick = {
-//                        Toast.makeText(context, "It worked", Toast.LENGTH_LONG).show()
-//                        true
-//                    }
-//                ) {
-//
-//                    // THIS is what MUST render (InfoWindow content)
-//                    Card(
-//                        modifier = Modifier.widthIn(max = 240.dp),
-//                        shape = RoundedCornerShape(16.dp),
-//                        colors = CardDefaults.cardColors(
-//                            containerColor = Color.White.copy(alpha = 0.95f)
-//                        ),
-//                        elevation = CardDefaults.cardElevation(6.dp)
-//                    ) {
-//
-//                        Column(modifier = Modifier.padding(12.dp)) {
-//
-//                            Row(
-//                                modifier = Modifier.fillMaxWidth(),
-//                                horizontalArrangement = Arrangement.SpaceBetween
-//                            ) {
-//                                Text(
-//                                    text = branch.name,
-//                                    style = MaterialTheme.typography.labelLarge,
-//                                    fontWeight = FontWeight.Bold,
-//                                    color = Color.Black,
-//                                    maxLines = 1
-//                                )
-//
-//                                Text(
-//                                    text = if (branch.isOpen) "Open" else "Closed",
-//                                    color = if (branch.isOpen)
-//                                        Color(0xFF2E7D32)
-//                                    else
-//                                        MaterialTheme.colorScheme.error,
-//                                    style = MaterialTheme.typography.labelSmall
-//                                )
-//                            }
-//
-//                            Spacer(modifier = Modifier.height(4.dp))
-//
-//                            Text(
-//                                text = branch.address,
-//                                style = MaterialTheme.typography.bodySmall,
-//                                color = Color.Gray,
-//                                maxLines = 2
-//                            )
-//
-//                            Spacer(modifier = Modifier.height(8.dp))
-//
-//                            Surface(
-//                                shape = RoundedCornerShape(50),
-//                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-//                            ) {
-//                                Text(
-//                                    text = branch.distance,
-//                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
-//                                    style = MaterialTheme.typography.labelSmall,
-//                                    color = MaterialTheme.colorScheme.primary
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        // ----------------------
-//        // SEARCH BAR
-//        // ----------------------
-//        BranchSearchBar(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .statusBarsPadding()
-//                .padding(horizontal = 16.dp, vertical = 12.dp)
-//                .align(Alignment.TopCenter)
-//        )
-//    }
-//}

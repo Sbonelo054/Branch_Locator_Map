@@ -21,7 +21,6 @@ fun SplashScreen(
     onNavigateToMain: () -> Unit
 ) {
 
-
     var startAnimation by remember { mutableStateOf(false) }
 
     val scaleAnim by animateFloatAsState(

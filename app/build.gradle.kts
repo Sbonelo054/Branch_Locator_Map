@@ -78,9 +78,8 @@ dependencies {
     implementation(libs.room.common)
     implementation(libs.gson)
     implementation(libs.play.services.location)
-    implementation("io.insert-koin:koin-androidx-compose:3.5.6")
+    implementation(libs.koin.androidx.compose)
 
-// Google maps Compose
     implementation(libs.maps.compose)
     implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)

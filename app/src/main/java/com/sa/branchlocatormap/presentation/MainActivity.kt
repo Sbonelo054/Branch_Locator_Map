@@ -13,14 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
-import com.google.android.gms.maps.MapsInitializer
 import com.sa.branchlocatormap.ui.theme.BranchLocatorMapTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        MapsInitializer.initialize(this)
         setContent {
             BranchLocatorMapTheme {
                 var showSplash by remember { mutableStateOf(true) }
@@ -34,7 +32,6 @@ class MainActivity : ComponentActivity() {
                     } else {
                         MainScreen()
                     }
-
             }
         }
     }

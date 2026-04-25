@@ -58,11 +58,13 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.sa.branchlocatormap.domain.BankBranchDetail
 import com.sa.branchlocatormap.presentation.viewModel.BranchSharedViewModel
+import com.sa.branchlocatormap.presentation.viewModel.FavouritesViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BranchDetailScreen(navController: NavController) {
     val sharedViewModel: BranchSharedViewModel = koinViewModel()
+    val favouritesViewModel: FavouritesViewModel = koinViewModel()
     val selectedBranch by sharedViewModel.selectedBranch.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -115,7 +117,14 @@ fun BranchDetailScreen(navController: NavController) {
                     }
 
                     IconButton(
-                        onClick = { isFavourite = !isFavourite },
+                        onClick = {
+                            isFavourite = !isFavourite
+                            if (isFavourite) {
+                                favouritesViewModel.addFavourite(branch)
+                            } else {
+                                favouritesViewModel.deleteFavourite(branch)
+                            }
+                        },
                         modifier = Modifier
                             .background(Color.White.copy(alpha = 0.2f), CircleShape)
                     ) {
@@ -266,7 +275,7 @@ fun ActionButtons(branchDetail: BankBranchDetail) {
 
         Button(
             onClick = {
-
+                openGoogleMapsNavigation(context, branchDetail.latitude, branchDetail.longitude)
             },
             modifier = Modifier.weight(1f)
         ) {
@@ -352,6 +361,44 @@ fun makeDirectCall(context: Context, phoneNumber: String) {
     }
 
     context.startActivity(intent)
+}
+
+fun openGoogleMapsNavigation(context: Context, lat: Double, lng: Double) {
+
+    // Primary: turn-by-turn navigation
+    val gmIntentUri = Uri.parse("google.navigation:q=$lat,$lng")
+
+    val mapIntent = Intent(Intent.ACTION_VIEW, gmIntentUri).apply {
+        setPackage("com.google.android.apps.maps")
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+
+    try {
+        context.startActivity(mapIntent)
+    } catch (e: Exception) {
+
+        // Fallback 1: generic geo intent
+        val geoUri = Uri.parse("geo:$lat,$lng?q=$lat,$lng")
+
+        val fallbackIntent = Intent(Intent.ACTION_VIEW, geoUri).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        try {
+            context.startActivity(fallbackIntent)
+        } catch (e2: Exception) {
+
+            // Fallback 2: browser Google Maps
+            val webUri = Uri.parse(
+                "https://www.google.com/maps/dir/?api=1&destination=$lat,$lng"
+            )
+
+            context.startActivity(
+                Intent(Intent.ACTION_VIEW, webUri)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        }
+    }
 }
 
 @Preview
