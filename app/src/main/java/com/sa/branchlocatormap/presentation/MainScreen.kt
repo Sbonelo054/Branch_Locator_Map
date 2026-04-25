@@ -18,21 +18,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.sa.branchlocatormap.presentation.maps.MapsScreen
 import com.sa.branchlocatormap.presentation.navigation.BottomNavItemScreen
 import com.sa.branchlocatormap.presentation.navigation.Screen
 
+val items = listOf(
+    BottomNavItemScreen.Map,
+    BottomNavItemScreen.Favourites,
+    BottomNavItemScreen.History
+)
+
 @Composable
 fun MainScreen() {
-
     val navController = rememberNavController()
     var selectedIndex by remember { mutableIntStateOf(0) }
-
-    val items = listOf(
-        BottomNavItemScreen.Map,
-        BottomNavItemScreen.Favourites,
-        BottomNavItemScreen.History
-    )
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -76,7 +74,7 @@ fun MainScreen() {
         ) {
 
             composable(BottomNavItemScreen.Map.route) {
-                MapsScreen()
+                MapsScreen(Modifier, navController)
             }
 
             composable(BottomNavItemScreen.Favourites.route) {
@@ -92,9 +90,8 @@ fun MainScreen() {
             }
 
             composable(Screen.BRANCH_DETAIL) {
-                BranchDetailScreen()
+                BranchDetailScreen(navController)
             }
         }
     }
 }
-

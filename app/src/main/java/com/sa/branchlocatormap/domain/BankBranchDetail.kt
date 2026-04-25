@@ -11,6 +11,7 @@ data class BankBranchDetail(
     val isOpen: Boolean = true,
     val openTime: String = "",
     val closeTime: String = "",
+    val isFavourite: Boolean = false,
     val phone: String = "",
     val services: List<String> = listOf(),
     val latitude: Double = 0.0,

@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,10 +15,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sa.branchlocatormap.domain.BankBranchDetail
+import com.sa.branchlocatormap.presentation.viewModel.FavouritesViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavouritesScreen(onBranchClick:() -> Unit) {
+    val favouritesViewModel: FavouritesViewModel = koinViewModel()
+    val favouritesState by favouritesViewModel.favouriteUiState.collectAsState()
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -33,13 +40,10 @@ fun FavouritesScreen(onBranchClick:() -> Unit) {
             )
         }
 
-        BankBranchScreen(onBranchClick)
+        BankBranchScreen(onBranchClick, favouritesState.favourites)
     }
 }
 
-// ----------------------
-// Main List Composable
-// ----------------------
 @Composable
 fun BankBranchList(onBranchClick: () -> Unit, branches: List<BankBranchDetail>) {
     LazyColumn(
@@ -52,9 +56,6 @@ fun BankBranchList(onBranchClick: () -> Unit, branches: List<BankBranchDetail>) 
     }
 }
 
-// ----------------------
-// Item UI
-// ----------------------
 @Composable
 fun BankBranchItem(onBranchClick: () -> Unit, branch: BankBranchDetail) {
     Card(
@@ -132,15 +133,7 @@ fun BankBranchItem(onBranchClick: () -> Unit, branch: BankBranchDetail) {
 }
 
 @Composable
-fun BankBranchScreen(onBranchClick: () -> Unit){
-    val branches = listOf(
-        BankBranchDetail("Standard Bank - Sandton", "123 Rivonia Rd", "1.2 km", true),
-        BankBranchDetail("FNB - Rosebank", "45 Oxford Rd", "2.5 km", false),
-        BankBranchDetail("Absa - Melrose Arch", "10 High St", "3.1 km", true),
-        BankBranchDetail("Nedbank - Hyde Park", "88 Jan Smuts Ave", "4.0 km", true),
-        BankBranchDetail("Absa - Melrose Arch", "10 High St", "3.1 km", true),
-        BankBranchDetail("Absa - Melrose Arch", "10 High St", "3.1 km", false),
-        BankBranchDetail("Absa - Melrose Arch", "10 High St", "3.1 km", true))
+fun BankBranchScreen(onBranchClick: () -> Unit, branches: List<BankBranchDetail>){
 
     BankBranchList(onBranchClick = onBranchClick, branches = branches)
 }

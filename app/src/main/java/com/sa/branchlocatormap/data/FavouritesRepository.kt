@@ -1,12 +1,23 @@
 package com.sa.branchlocatormap.data
 
+import android.app.Application
 import com.sa.branchlocatormap.domain.BankBranchDetail
+import com.sa.branchlocatormap.domain.IFavouritesRepository
+import kotlinx.coroutines.flow.Flow
 
-interface IFavouritesRepository {
+class FavouritesRepository(
+    private val dao: BranchLocatorDao
+) : IFavouritesRepository {
 
-    fun saveFavouriteBranch(bankBranchDetail: BankBranchDetail)
+    override suspend fun saveFavouriteBranch(bankBranchDetail: BankBranchDetail) {
+        dao.saveFavourite(bankBranchDetail)
+    }
 
-    fun getFavouriteBranches(): List<BankBranchDetail>
+    override suspend fun getFavouriteBranches(): Flow<List<BankBranchDetail>> {
+        return dao.getFavourites()
+    }
 
-    fun deleteFavourite()
+    override suspend fun deleteFavourite(branch: BankBranchDetail) {
+        dao.removeFavourite(branch)
+    }
 }

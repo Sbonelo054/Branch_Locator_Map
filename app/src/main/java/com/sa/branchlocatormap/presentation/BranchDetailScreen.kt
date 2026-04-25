@@ -39,6 +39,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,30 +49,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
 import com.sa.branchlocatormap.domain.BankBranchDetail
-
-// ----------------------
-// Main Screen
-// ----------------------
+import com.sa.branchlocatormap.presentation.viewModel.BranchSharedViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun BranchDetailScreen() {
-    val branch = BankBranchDetail(
-        "Standard Bank - Sandton",
-        "123 Rivonia Rd, Sandton",
-        "1.2 km",
-        true,
-        "08:00",
-        "16:30",
-        "+27 11 123 4567",
-        listOf("ATM", "Forex", "Business Banking", "Home Loans")
-    )
+fun BranchDetailScreen(navController: NavController) {
+    val sharedViewModel: BranchSharedViewModel = koinViewModel()
+    val selectedBranch by sharedViewModel.selectedBranch.collectAsState()
 
+    LaunchedEffect(Unit) {
+        if (selectedBranch == null) {
+            navController.popBackStack()
+        }
+    }
+
+    val branch = selectedBranch?: return
     var isFavourite by remember { mutableStateOf(true) }
 
     Column(
@@ -79,9 +80,6 @@ fun BranchDetailScreen() {
             .verticalScroll(rememberScrollState())
     ) {
 
-        // ----------------------
-        // HERO HEADER
-        // ----------------------
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -148,16 +146,10 @@ fun BranchDetailScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ----------------------
-        // ACTION BUTTONS
-        // ----------------------
         ActionButtons(branch)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ----------------------
-        // INFO CARD
-        // ----------------------
         InfoCard {
             Column {
                 DetailRow(Icons.Default.LocationOn, "Address", branch.address)
@@ -168,18 +160,12 @@ fun BranchDetailScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ----------------------
-        // OPENING HOURS
-        // ----------------------
         InfoCard {
             OpeningHoursSection(branch)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ----------------------
-        // SERVICES
-        // ----------------------
         InfoCard {
             Column {
                 Text(
@@ -190,7 +176,7 @@ fun BranchDetailScreen() {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                branch.services.forEach {
+                branch?.services?.forEach {
                     ServiceChip(it)
                 }
             }
@@ -200,9 +186,6 @@ fun BranchDetailScreen() {
     }
 }
 
-// ----------------------
-// Status Badge
-// ----------------------
 @Composable
 fun StatusBadge(isOpen: Boolean) {
     Surface(
@@ -221,9 +204,6 @@ fun StatusBadge(isOpen: Boolean) {
     }
 }
 
-// ----------------------
-// Distance Pill
-// ----------------------
 @Composable
 fun DistancePill(distance: String, isLight: Boolean = false) {
     Surface(
@@ -242,9 +222,6 @@ fun DistancePill(distance: String, isLight: Boolean = false) {
     }
 }
 
-// ----------------------
-// Info Card
-// ----------------------
 @Composable
 fun InfoCard(content: @Composable () -> Unit) {
     Card(
@@ -260,11 +237,8 @@ fun InfoCard(content: @Composable () -> Unit) {
     }
 }
 
-// ----------------------
-// Detail Row
-// ----------------------
 @Composable
-fun DetailRow(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, value: String) {
+fun DetailRow(icon: ImageVector, title: String, value: String) {
     Row(
         modifier = Modifier.padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -280,9 +254,6 @@ fun DetailRow(icon: androidx.compose.ui.graphics.vector.ImageVector, title: Stri
     }
 }
 
-// ----------------------
-// Action Buttons
-// ----------------------
 @Composable
 fun ActionButtons(branchDetail: BankBranchDetail) {
     val context = LocalContext.current
@@ -331,9 +302,6 @@ fun ActionButtons(branchDetail: BankBranchDetail) {
     }
 }
 
-// ----------------------
-// Opening Hours
-// ----------------------
 @Composable
 fun OpeningHoursSection(branch: BankBranchDetail) {
     Column {
@@ -361,9 +329,6 @@ fun OpeningHourRow(day: String, time: String, highlight: Boolean) {
     }
 }
 
-// ----------------------
-// Service Chip
-// ----------------------
 @Composable
 fun ServiceChip(text: String) {
     Surface(
@@ -389,13 +354,10 @@ fun makeDirectCall(context: Context, phoneNumber: String) {
     context.startActivity(intent)
 }
 
-// ----------------------
-// Preview
-// ----------------------
 @Preview
 @Composable
 fun PreviewBranchDetail() {
     MaterialTheme {
-        BranchDetailScreen()
+        BranchDetailScreen(navController = NavController(LocalContext.current))
     }
 }

@@ -9,9 +9,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 import com.google.android.gms.maps.MapsInitializer
-import com.sa.branchlocatormap.presentation.maps.MapsScreen
 import com.sa.branchlocatormap.ui.theme.BranchLocatorMapTheme
 
 class MainActivity : ComponentActivity() {
@@ -42,6 +44,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     BranchLocatorMapTheme {
-        MapsScreen()
+        MapsScreen(
+            modifier = Modifier,
+            navController = NavController(LocalContext.current)
+        )
     }
 }
