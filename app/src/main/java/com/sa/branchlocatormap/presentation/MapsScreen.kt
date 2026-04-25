@@ -117,20 +117,15 @@ fun MapsScreen(modifier: Modifier = Modifier, navController: NavController) {
         label = "scale"
     )
 
-    val animatedIcon = remember(scale) {
-        createMarkerIcon(
-            context = context,
-            resId = R.drawable.ic_bank,
-            scale = scale
-        )
-    }
-
-    val markerIcon = remember {
-        createMarkerIcon(context, R.drawable.ic_bank)
-    }
+//    val animatedIcon = remember(scale) {
+//        createMarkerIcon(
+//            context = context,
+//            resId = R.drawable.ic_bank,
+//            scale = scale
+//        )
+//    }
 
     var hasPermission by remember { mutableStateOf(false) }
-    var currentLocation by remember { mutableStateOf<LatLng?>(null) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -154,8 +149,6 @@ fun MapsScreen(modifier: Modifier = Modifier, navController: NavController) {
             override fun onLocationResult(result: LocationResult) {
                 val location = result.lastLocation ?: return
                 val latLng = LatLng(location.latitude, location.longitude)
-
-                currentLocation = latLng
 
                 scope.launch {
                     cameraPositionState.animate(
@@ -198,9 +191,10 @@ fun MapsScreen(modifier: Modifier = Modifier, navController: NavController) {
                 myLocationButtonEnabled = true
             )
         ) {
-
+            val markerIcon = remember {
+                createMarkerIcon(context, R.drawable.ic_bank)
+            }
             branches.forEachIndexed { index, area ->
-
 
                 Marker(
                     state = MarkerState(position = LatLng(area.latitude, area.longitude)),
@@ -210,7 +204,6 @@ fun MapsScreen(modifier: Modifier = Modifier, navController: NavController) {
                     onClick = {
                         sharedViewModel.selectBranch(area)
                         navigateToDetail = true
-                        //Toast.makeText(context,"${area.name}", Toast.LENGTH_LONG).show()
                         true
                     }
                 )
