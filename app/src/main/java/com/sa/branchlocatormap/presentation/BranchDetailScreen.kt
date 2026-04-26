@@ -61,6 +61,7 @@ import androidx.navigation.NavController
 import com.sa.branchlocatormap.domain.BankBranchDetail
 import com.sa.branchlocatormap.presentation.viewModel.BranchSharedViewModel
 import com.sa.branchlocatormap.presentation.viewModel.FavouritesViewModel
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -75,8 +76,20 @@ fun BranchDetailScreen(navController: NavController) {
         }
     }
 
-    val branch = selectedBranch?: return
+    val branch = selectedBranch ?: return
+
     var isFavourite by remember { mutableStateOf(branch.isFavourite) }
+
+    val currentTime = remember { mutableStateOf(java.util.Calendar.getInstance()) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            currentTime.value = java.util.Calendar.getInstance()
+            delay(60_000)
+        }
+    }
+
+    val isOpenNow = isBranchOpen(branch.openTime, branch.closeTime)
 
     Column(
         modifier = Modifier
@@ -115,22 +128,22 @@ fun BranchDetailScreen(navController: NavController) {
 
                         Spacer(modifier = Modifier.height(6.dp))
 
-                        StatusBadge(branch.isOpen)
+                        StatusBadge(isOpenNow)
                     }
 
                     IconButton(
                         onClick = {
-                            isFavourite = !isFavourite
-                            val updatedBranch = branch.copy(isFavourite = !branch.isFavourite)
+                            val newValue = !isFavourite
+                            isFavourite = newValue
 
-                            if (updatedBranch.isFavourite) {
+                            val updatedBranch = branch.copy(isFavourite = newValue)
+
+                            if (newValue) {
                                 favouritesViewModel.addFavourite(updatedBranch)
                             } else {
                                 favouritesViewModel.deleteFavourite(updatedBranch)
                             }
                         },
-                        modifier = Modifier
-                            .background(Color.White.copy(alpha = 0.2f), CircleShape)
                     ) {
                         Icon(
                             imageVector = if (isFavourite)
@@ -167,7 +180,11 @@ fun BranchDetailScreen(navController: NavController) {
             Column {
                 DetailRow(Icons.Default.LocationOn, "Address", branch.address)
                 DetailRow(Icons.Default.Phone, "Phone", branch.phone)
-                DetailRow(Icons.Default.AccessTime, "Hours", "${branch.openTime} - ${branch.closeTime}")
+                DetailRow(
+                    Icons.Default.AccessTime,
+                    "Hours",
+                    "${branch.openTime} - ${branch.closeTime}"
+                )
             }
         }
 
@@ -451,6 +468,59 @@ fun getServiceIcon(service: String): ImageVector {
         "investment" -> Icons.Default.TrendingUp
 
         else -> Icons.Default.Savings
+    }
+}
+
+fun isBranchOpen(openTime: String, closeTime: String): Boolean {
+    return try {
+
+        val calendar = java.util.Calendar.getInstance()
+        val dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK)
+
+        if (dayOfWeek == java.util.Calendar.SUNDAY) {
+            return false
+        }
+
+        val format = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+
+        val nowCal = java.util.Calendar.getInstance()
+
+        val openDate = format.parse(openTime)
+        val closeDate = format.parse(closeTime)
+
+        if (openDate != null && closeDate != null) {
+
+            val openCal = java.util.Calendar.getInstance()
+            val closeCal = java.util.Calendar.getInstance()
+
+            openCal.time = openDate
+            closeCal.time = closeDate
+
+            // align to today
+            openCal.set(
+                nowCal.get(java.util.Calendar.YEAR),
+                nowCal.get(java.util.Calendar.MONTH),
+                nowCal.get(java.util.Calendar.DAY_OF_MONTH)
+            )
+
+            closeCal.set(
+                nowCal.get(java.util.Calendar.YEAR),
+                nowCal.get(java.util.Calendar.MONTH),
+                nowCal.get(java.util.Calendar.DAY_OF_MONTH)
+            )
+
+            // handle overnight cases
+            if (closeCal.before(openCal)) {
+                closeCal.add(java.util.Calendar.DAY_OF_MONTH, 1)
+            }
+
+            nowCal.after(openCal) && nowCal.before(closeCal)
+        } else {
+            false
+        }
+
+    } catch (e: Exception) {
+        false
     }
 }
 

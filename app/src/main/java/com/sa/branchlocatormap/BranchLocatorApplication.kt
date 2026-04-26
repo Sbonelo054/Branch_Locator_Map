@@ -1,6 +1,7 @@
 package com.sa.branchlocatormap
 
 import android.app.Application
+import com.sa.branchlocatormap.di.dataSourceModule
 import com.sa.branchlocatormap.di.databaseModule
 import com.sa.branchlocatormap.di.repositoryModule
 import com.sa.branchlocatormap.di.viewModelModule
@@ -14,7 +15,7 @@ class BranchLocatorApplication: Application() {
         startKoin {
             androidLogger()
             androidContext(this@BranchLocatorApplication)
-            modules(repositoryModule, viewModelModule, databaseModule)
+            modules(repositoryModule, viewModelModule, databaseModule, dataSourceModule)
         }
     }
 }

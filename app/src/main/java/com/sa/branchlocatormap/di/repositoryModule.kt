@@ -8,7 +8,7 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
 
-    single<IBankRepository> { BankRepository() }
+    single<IBankRepository> { BankRepository(get()) }
 
     single<IFavouritesRepository> { FavouritesRepository(get()) }
 }
