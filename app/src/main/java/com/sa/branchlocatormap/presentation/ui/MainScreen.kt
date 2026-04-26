@@ -1,4 +1,4 @@
-package com.sa.branchlocatormap.presentation
+package com.sa.branchlocatormap.presentation.ui
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon

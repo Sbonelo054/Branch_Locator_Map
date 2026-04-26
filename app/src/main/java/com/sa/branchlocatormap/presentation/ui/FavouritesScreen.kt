@@ -1,4 +1,4 @@
-package com.sa.branchlocatormap.presentation
+package com.sa.branchlocatormap.presentation.ui
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -23,9 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.sa.branchlocatormap.domain.BankBranchDetail
+import com.sa.branchlocatormap.domain.model.BankBranchDetail
 import com.sa.branchlocatormap.presentation.viewModel.FavouritesViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -132,7 +133,7 @@ fun EmptyFavouritesScreen() {
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray,
             modifier = Modifier.padding(horizontal = 32.dp),
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(24.dp))

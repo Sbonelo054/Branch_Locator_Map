@@ -1,9 +1,9 @@
 package com.sa.branchlocatormap.di
 
-import com.sa.branchlocatormap.domain.IFavouritesRepository
-import com.sa.branchlocatormap.data.BankRepository
-import com.sa.branchlocatormap.data.FavouritesRepository
-import com.sa.branchlocatormap.domain.IBankRepository
+import com.sa.branchlocatormap.domain.repository.IFavouritesRepository
+import com.sa.branchlocatormap.data.repository.BankRepository
+import com.sa.branchlocatormap.data.repository.FavouritesRepository
+import com.sa.branchlocatormap.domain.repository.IBankRepository
 import org.koin.dsl.module
 
 /**

@@ -1,6 +1,6 @@
 package com.sa.branchlocatormap.data.dataSource
 
-import com.sa.branchlocatormap.domain.BankBranchDetail
+import com.sa.branchlocatormap.domain.model.BankBranchDetail
 /**
  * Local data source that provides a static list of bank branches.
  *

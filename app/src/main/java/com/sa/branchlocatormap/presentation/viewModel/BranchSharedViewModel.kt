@@ -1,7 +1,7 @@
 package com.sa.branchlocatormap.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
-import com.sa.branchlocatormap.domain.BankBranchDetail
+import com.sa.branchlocatormap.domain.model.BankBranchDetail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 

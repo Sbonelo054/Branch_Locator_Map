@@ -4,8 +4,8 @@ import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
-import com.sa.branchlocatormap.domain.BankBranchDetail
-import com.sa.branchlocatormap.domain.IBankRepository
+import com.sa.branchlocatormap.domain.model.BankBranchDetail
+import com.sa.branchlocatormap.domain.repository.IBankRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

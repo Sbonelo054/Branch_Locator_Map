@@ -1,12 +1,13 @@
-package com.sa.branchlocatormap.data
+package com.sa.branchlocatormap.data.dataSource
 
 import android.app.Application
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.sa.branchlocatormap.domain.BankBranchDetail
-import com.sa.branchlocatormap.domain.Converters
+import com.sa.branchlocatormap.data.dataSource.BranchLocatorDao
+import com.sa.branchlocatormap.domain.model.BankBranchDetail
+import com.sa.branchlocatormap.domain.model.Converters
 
 /**
  * Main Room database for the Branch Locator feature.

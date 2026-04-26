@@ -2,8 +2,8 @@ package com.sa.branchlocatormap.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sa.branchlocatormap.domain.BankBranchDetail
-import com.sa.branchlocatormap.domain.IFavouritesRepository
+import com.sa.branchlocatormap.domain.model.BankBranchDetail
+import com.sa.branchlocatormap.domain.repository.IFavouritesRepository
 import com.sa.branchlocatormap.presentation.uiState.FavouritesUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

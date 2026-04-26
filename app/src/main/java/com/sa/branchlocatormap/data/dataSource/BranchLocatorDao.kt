@@ -1,13 +1,12 @@
-package com.sa.branchlocatormap.data
+package com.sa.branchlocatormap.data.dataSource
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.sa.branchlocatormap.domain.BankBranchDetail
+import com.sa.branchlocatormap.domain.model.BankBranchDetail
 import kotlinx.coroutines.flow.Flow
-
 
 /**
  * Data Access Object (DAO) for managing bank branch favourites.
@@ -32,13 +31,13 @@ interface BranchLocatorDao {
      * Notes:
      * - Marked as `suspend` because database operations should not run on the main thread.
      */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun saveFavourite(bankBranchDetail: BankBranchDetail)
 
     /**
      * Retrieves all favourite branches from the database.
      *
-     * @return A [Flow] that emits a list of favourite branches.
+     * @return A [kotlinx.coroutines.flow.Flow] that emits a list of favourite branches.
      *
      * Behavior:
      * - Automatically emits updates whenever the database table changes.

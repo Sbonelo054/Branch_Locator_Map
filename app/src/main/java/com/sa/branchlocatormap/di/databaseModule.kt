@@ -1,7 +1,7 @@
 package com.sa.branchlocatormap.di
 
-import com.sa.branchlocatormap.data.BranchLocatorDao
-import com.sa.branchlocatormap.data.BranchLocatorDatabase
+import com.sa.branchlocatormap.data.dataSource.BranchLocatorDao
+import com.sa.branchlocatormap.data.dataSource.BranchLocatorDatabase
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 

@@ -1,4 +1,4 @@
-package com.sa.branchlocatormap.presentation
+package com.sa.branchlocatormap.presentation.ui
 
 import android.Manifest
 import android.content.Context

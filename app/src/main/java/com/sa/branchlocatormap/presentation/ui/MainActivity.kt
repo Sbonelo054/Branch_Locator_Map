@@ -1,4 +1,4 @@
-package com.sa.branchlocatormap.presentation
+package com.sa.branchlocatormap.presentation.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

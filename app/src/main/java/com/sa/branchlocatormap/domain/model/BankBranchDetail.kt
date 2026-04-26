@@ -1,4 +1,4 @@
-package com.sa.branchlocatormap.domain
+package com.sa.branchlocatormap.domain.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

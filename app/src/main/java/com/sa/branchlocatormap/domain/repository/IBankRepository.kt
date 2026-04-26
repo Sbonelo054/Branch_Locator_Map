@@ -1,4 +1,6 @@
-package com.sa.branchlocatormap.domain
+package com.sa.branchlocatormap.domain.repository
+
+import com.sa.branchlocatormap.domain.model.BankBranchDetail
 
 import kotlinx.coroutines.flow.StateFlow
 

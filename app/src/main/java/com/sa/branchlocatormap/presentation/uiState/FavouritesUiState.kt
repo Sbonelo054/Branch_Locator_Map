@@ -1,6 +1,6 @@
 package com.sa.branchlocatormap.presentation.uiState
 
-import com.sa.branchlocatormap.domain.BankBranchDetail
+import com.sa.branchlocatormap.domain.model.BankBranchDetail
 
 /**
  * UI state holder for the Favourites screen.

@@ -1,4 +1,4 @@
-package com.sa.branchlocatormap.presentation
+package com.sa.branchlocatormap.presentation.ui
 
 /**
  * This file defines the Branch Detail screen and all related UI components and helper functions.
@@ -17,6 +17,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.compose.material.icons.filled.*
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +43,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardDefaults.cardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -67,11 +69,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.sa.branchlocatormap.domain.BankBranchDetail
+import com.sa.branchlocatormap.domain.model.BankBranchDetail
 import com.sa.branchlocatormap.presentation.viewModel.BranchSharedViewModel
 import com.sa.branchlocatormap.presentation.viewModel.FavouritesViewModel
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 /**
  * Main screen that displays full details of a selected bank branch.
@@ -103,14 +108,14 @@ fun BranchDetailScreen(navController: NavController) {
     var isFavourite by remember { mutableStateOf(branch.isFavourite) }
 
     // Used to periodically refresh time-based UI logic
-    val currentTime = remember { mutableStateOf(java.util.Calendar.getInstance()) }
+    val currentTime = remember { mutableStateOf(Calendar.getInstance()) }
 
     /**
      * Updates current time every 60 seconds.
      */
     LaunchedEffect(Unit) {
         while (true) {
-            currentTime.value = java.util.Calendar.getInstance()
+            currentTime.value = Calendar.getInstance()
             delay(60_000)
         }
     }
@@ -406,7 +411,7 @@ fun ActionButtons(branchDetail: BankBranchDetail) {
         }
 
         val callPermissionLauncher = rememberLauncherForActivityResult(
-            contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+            contract = ActivityResultContracts.RequestPermission()
         ) { isGranted ->
             if (isGranted) {
                 makeDirectCall(context, branchDetail.phone)
@@ -505,7 +510,7 @@ fun ModernServiceTile(
     Card(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
-        colors = androidx.compose.material3.CardDefaults.cardColors(
+        colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = cardElevation(2.dp)
@@ -584,39 +589,39 @@ fun getServiceIcon(service: String): ImageVector {
 fun isBranchOpen(openTime: String, closeTime: String): Boolean {
     return try {
 
-        val calendar = java.util.Calendar.getInstance()
-        val dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK)
+        val calendar = Calendar.getInstance()
+        val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
 
-        if (dayOfWeek == java.util.Calendar.SUNDAY) return false
+        if (dayOfWeek == Calendar.SUNDAY) return false
 
-        val format = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
-        val nowCal = java.util.Calendar.getInstance()
+        val format = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val nowCal = Calendar.getInstance()
 
         val openDate = format.parse(openTime)
         val closeDate = format.parse(closeTime)
 
         if (openDate != null && closeDate != null) {
 
-            val openCal = java.util.Calendar.getInstance()
-            val closeCal = java.util.Calendar.getInstance()
+            val openCal = Calendar.getInstance()
+            val closeCal = Calendar.getInstance()
 
             openCal.time = openDate
             closeCal.time = closeDate
 
             openCal.set(
-                nowCal.get(java.util.Calendar.YEAR),
-                nowCal.get(java.util.Calendar.MONTH),
-                nowCal.get(java.util.Calendar.DAY_OF_MONTH)
+                nowCal.get(Calendar.YEAR),
+                nowCal.get(Calendar.MONTH),
+                nowCal.get(Calendar.DAY_OF_MONTH)
             )
 
             closeCal.set(
-                nowCal.get(java.util.Calendar.YEAR),
-                nowCal.get(java.util.Calendar.MONTH),
-                nowCal.get(java.util.Calendar.DAY_OF_MONTH)
+                nowCal.get(Calendar.YEAR),
+                nowCal.get(Calendar.MONTH),
+                nowCal.get(Calendar.DAY_OF_MONTH)
             )
 
             if (closeCal.before(openCal)) {
-                closeCal.add(java.util.Calendar.DAY_OF_MONTH, 1)
+                closeCal.add(Calendar.DAY_OF_MONTH, 1)
             }
 
             nowCal.after(openCal) && nowCal.before(closeCal)

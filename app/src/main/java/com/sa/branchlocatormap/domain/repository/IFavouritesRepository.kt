@@ -1,5 +1,6 @@
-package com.sa.branchlocatormap.domain
+package com.sa.branchlocatormap.domain.repository
 
+import com.sa.branchlocatormap.domain.model.BankBranchDetail
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -23,7 +24,7 @@ interface IFavouritesRepository {
     /**
      * Retrieves all favourite bank branches as a reactive stream.
      *
-     * @return A [Flow] emitting the current list of favourites.
+     * @return A [kotlinx.coroutines.flow.Flow] emitting the current list of favourites.
      *
      * Behavior:
      * - Emits updates automatically when the database changes.

@@ -1,4 +1,4 @@
-package com.sa.branchlocatormap.domain
+package com.sa.branchlocatormap.domain.model
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
@@ -43,7 +43,7 @@ class Converters {
         val type = object : TypeToken<List<String>>() {}.type
         return try {
             gson.fromJson<List<String>>(data, type) ?: emptyList()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             emptyList()
         }
     }

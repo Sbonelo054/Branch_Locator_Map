@@ -1,8 +1,8 @@
-package com.sa.branchlocatormap.data
+package com.sa.branchlocatormap.data.repository
 
 import com.sa.branchlocatormap.data.dataSource.BankBranchLocalDataSource
-import com.sa.branchlocatormap.domain.BankBranchDetail
-import com.sa.branchlocatormap.domain.IBankRepository
+import com.sa.branchlocatormap.domain.model.BankBranchDetail
+import com.sa.branchlocatormap.domain.repository.IBankRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
  * This repository is responsible for exposing bank branch data to the rest
  * of the app while hiding the underlying data source (currently local only).
  *
- * It uses Kotlin Flow ([StateFlow]) to provide observable, reactive updates.
+ * It uses Kotlin Flow ([kotlinx.coroutines.flow.StateFlow]) to provide observable, reactive updates.
  */
 class BankRepository(
     private val localDataSource: BankBranchLocalDataSource

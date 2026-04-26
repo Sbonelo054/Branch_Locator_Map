@@ -1,7 +1,8 @@
-package com.sa.branchlocatormap.data
+package com.sa.branchlocatormap.data.repository
 
-import com.sa.branchlocatormap.domain.BankBranchDetail
-import com.sa.branchlocatormap.domain.IFavouritesRepository
+import com.sa.branchlocatormap.data.dataSource.BranchLocatorDao
+import com.sa.branchlocatormap.domain.model.BankBranchDetail
+import com.sa.branchlocatormap.domain.repository.IFavouritesRepository
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -37,7 +38,7 @@ class FavouritesRepository(
     /**
      * Retrieves all favourite branches.
      *
-     * @return A [Flow] emitting a list of favourite branches.
+     * @return A [kotlinx.coroutines.flow.Flow] emitting a list of favourite branches.
      *
      * Behavior:
      * - Emits updates automatically whenever the database changes.
