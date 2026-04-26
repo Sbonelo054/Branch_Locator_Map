@@ -1,5 +1,15 @@
 package com.sa.branchlocatormap.presentation
 
+/**
+ * This file defines the Branch Detail screen and all related UI components and helper functions.
+ *
+ * The screen is responsible for:
+ * - Displaying detailed information about a selected bank branch
+ * - Handling favourite/unfavourite actions
+ * - Providing actions such as calling the branch or opening navigation in Google Maps
+ * - Displaying services, opening hours, and branch metadata
+ */
+
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -21,7 +31,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
@@ -64,12 +73,24 @@ import com.sa.branchlocatormap.presentation.viewModel.FavouritesViewModel
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
+/**
+ * Main screen that displays full details of a selected bank branch.
+ */
 @Composable
 fun BranchDetailScreen(navController: NavController) {
+
+    // Shared ViewModel holding the currently selected branch
     val sharedViewModel: BranchSharedViewModel = koinViewModel()
+
+    // ViewModel responsible for managing favourites in local storage
     val favouritesViewModel: FavouritesViewModel = koinViewModel()
+
+    // Observing selected branch state
     val selectedBranch by sharedViewModel.selectedBranch.collectAsState()
 
+    /**
+     * If no branch is selected, return to previous screen.
+     */
     LaunchedEffect(Unit) {
         if (selectedBranch == null) {
             navController.popBackStack()
@@ -78,10 +99,15 @@ fun BranchDetailScreen(navController: NavController) {
 
     val branch = selectedBranch ?: return
 
+    // Local UI state for favourite toggle
     var isFavourite by remember { mutableStateOf(branch.isFavourite) }
 
+    // Used to periodically refresh time-based UI logic
     val currentTime = remember { mutableStateOf(java.util.Calendar.getInstance()) }
 
+    /**
+     * Updates current time every 60 seconds.
+     */
     LaunchedEffect(Unit) {
         while (true) {
             currentTime.value = java.util.Calendar.getInstance()
@@ -89,6 +115,7 @@ fun BranchDetailScreen(navController: NavController) {
         }
     }
 
+    // Determines whether the branch is currently open
     val isOpenNow = isBranchOpen(branch.openTime, branch.closeTime)
 
     Column(
@@ -97,6 +124,9 @@ fun BranchDetailScreen(navController: NavController) {
             .verticalScroll(rememberScrollState())
     ) {
 
+        /**
+         * Header section showing branch name, status, favourite button, and address.
+         */
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -113,12 +143,14 @@ fun BranchDetailScreen(navController: NavController) {
         ) {
 
             Column {
+
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
 
                     Column(modifier = Modifier.weight(1f)) {
+
                         Text(
                             text = branch.name,
                             style = MaterialTheme.typography.headlineSmall,
@@ -128,9 +160,15 @@ fun BranchDetailScreen(navController: NavController) {
 
                         Spacer(modifier = Modifier.height(6.dp))
 
+                        /**
+                         * Displays whether branch is open or closed.
+                         */
                         StatusBadge(isOpenNow)
                     }
 
+                    /**
+                     * Favourite toggle button.
+                     */
                     IconButton(
                         onClick = {
                             val newValue = !isFavourite
@@ -143,7 +181,7 @@ fun BranchDetailScreen(navController: NavController) {
                             } else {
                                 favouritesViewModel.deleteFavourite(updatedBranch)
                             }
-                        },
+                        }
                     ) {
                         Icon(
                             imageVector = if (isFavourite)
@@ -172,10 +210,16 @@ fun BranchDetailScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        /**
+         * Action buttons for directions and calling the branch.
+         */
         ActionButtons(branch)
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        /**
+         * Basic branch information section.
+         */
         InfoCard {
             Column {
                 DetailRow(Icons.Default.LocationOn, "Address", branch.address)
@@ -190,14 +234,22 @@ fun BranchDetailScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        /**
+         * Opening hours section.
+         */
         InfoCard {
             OpeningHoursSection(branch)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        /**
+         * Services offered by the branch.
+         */
         InfoCard {
+
             Column {
+
                 Text(
                     "Services",
                     style = MaterialTheme.typography.titleMedium,
@@ -209,20 +261,24 @@ fun BranchDetailScreen(navController: NavController) {
                 val services = branch.services
 
                 if (services.isEmpty()) {
+
                     Text(
                         "No services available",
                         color = Color.Gray,
                         style = MaterialTheme.typography.bodySmall
                     )
+
                 } else {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
+
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+
                         services.chunked(2).forEach { rowItems ->
+
                             Row(
                                 Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
+
                                 rowItems.forEach { service ->
                                     ModernServiceTile(
                                         text = service,
@@ -244,6 +300,9 @@ fun BranchDetailScreen(navController: NavController) {
     }
 }
 
+/**
+ * Displays open/closed status badge.
+ */
 @Composable
 fun StatusBadge(isOpen: Boolean) {
     Surface(
@@ -262,6 +321,9 @@ fun StatusBadge(isOpen: Boolean) {
     }
 }
 
+/**
+ * Displays distance in a styled pill UI.
+ */
 @Composable
 fun DistancePill(distance: String, isLight: Boolean = false) {
     Surface(
@@ -280,6 +342,9 @@ fun DistancePill(distance: String, isLight: Boolean = false) {
     }
 }
 
+/**
+ * Reusable card container for information sections.
+ */
 @Composable
 fun InfoCard(content: @Composable () -> Unit) {
     Card(
@@ -295,6 +360,9 @@ fun InfoCard(content: @Composable () -> Unit) {
     }
 }
 
+/**
+ * Displays a single row of icon + title + value.
+ */
 @Composable
 fun DetailRow(icon: ImageVector, title: String, value: String) {
     Row(
@@ -312,9 +380,13 @@ fun DetailRow(icon: ImageVector, title: String, value: String) {
     }
 }
 
+/**
+ * Action buttons for calling and navigation.
+ */
 @Composable
 fun ActionButtons(branchDetail: BankBranchDetail) {
     val context = LocalContext.current
+
     Row(
         Modifier
             .fillMaxWidth()
@@ -332,6 +404,7 @@ fun ActionButtons(branchDetail: BankBranchDetail) {
             Spacer(modifier = Modifier.width(6.dp))
             Text("Directions")
         }
+
         val callPermissionLauncher = rememberLauncherForActivityResult(
             contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
         ) { isGranted ->
@@ -339,6 +412,7 @@ fun ActionButtons(branchDetail: BankBranchDetail) {
                 makeDirectCall(context, branchDetail.phone)
             }
         }
+
         OutlinedButton(
             onClick = {
                 if (ContextCompat.checkSelfPermission(
@@ -360,10 +434,17 @@ fun ActionButtons(branchDetail: BankBranchDetail) {
     }
 }
 
+/**
+ * Opening hours section UI.
+ */
 @Composable
 fun OpeningHoursSection(branch: BankBranchDetail) {
     Column {
-        Text("Opening Hours", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Text(
+            "Opening Hours",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -373,6 +454,20 @@ fun OpeningHoursSection(branch: BankBranchDetail) {
     }
 }
 
+/**
+ * A single row representing opening hours for a specific day.
+ *
+ * Displays:
+ * - The day label (e.g., "Mon - Fri", "Saturday")
+ * - The operating hours or status (e.g., "08:00 - 17:00", "Closed")
+ *
+ * The text style and color can be highlighted based on the [highlight] flag,
+ * typically used to emphasize standard weekday operating hours.
+ *
+ * @param day The day or day range label.
+ * @param time The operating hours or status text.
+ * @param highlight If true, applies emphasis styling to indicate primary hours.
+ */
 @Composable
 fun OpeningHourRow(day: String, time: String, highlight: Boolean) {
     Row(
@@ -387,6 +482,19 @@ fun OpeningHourRow(day: String, time: String, highlight: Boolean) {
     }
 }
 
+/**
+ * A modern UI card component used to display a single bank service (e.g., ATM, Loans, Forex).
+ *
+ * This composable renders:
+ * - A leading icon based on the service type
+ * - The service name
+ * - A small subtitle indicating availability
+ *
+ * The icon is dynamically resolved using [getServiceIcon].
+ *
+ * @param text The name of the service to display (e.g., "ATM", "Loans").
+ * @param modifier Optional [Modifier] for styling and layout adjustments.
+ */
 @Composable
 fun ModernServiceTile(
     text: String,
@@ -402,13 +510,16 @@ fun ModernServiceTile(
         ),
         elevation = cardElevation(2.dp)
     ) {
+
         Row(
-            modifier = Modifier
-                .padding(12.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            // Icon container (modern rounded square)
+            /**
+             * Icon container with a styled background to visually separate the icon
+             * from the rest of the content.
+             */
             Box(
                 modifier = Modifier
                     .size(36.dp)
@@ -428,6 +539,9 @@ fun ModernServiceTile(
 
             Spacer(modifier = Modifier.width(12.dp))
 
+            /**
+             * Textual information for the service.
+             */
             Column {
                 Text(
                     text = text,
@@ -445,44 +559,37 @@ fun ModernServiceTile(
     }
 }
 
+/**
+ * Maps service names to icons.
+ */
 fun getServiceIcon(service: String): ImageVector {
     return when (service.lowercase()) {
-
         "atm" -> Icons.Default.LocalAtm
-        "loans" -> Icons.Default.AttachMoney
-        "loan" -> Icons.Default.AttachMoney
-
-        "card services" -> Icons.Default.CreditCard
-        "credit cards" -> Icons.Default.CreditCard
-
-        "forex" -> Icons.Default.CurrencyExchange
-        "currency exchange" -> Icons.Default.CurrencyExchange
-
+        "loans", "loan" -> Icons.Default.AttachMoney
+        "card services", "credit cards" -> Icons.Default.CreditCard
+        "forex", "currency exchange" -> Icons.Default.CurrencyExchange
         "parking" -> Icons.Default.LocalParking
         "wifi" -> Icons.Default.Wifi
         "drive through" -> Icons.Default.DriveEta
-
         "banking" -> Icons.Default.AccountBalance
         "insurance" -> Icons.Default.Shield
-
         "investment" -> Icons.Default.TrendingUp
-
         else -> Icons.Default.Savings
     }
 }
 
+/**
+ * Checks whether branch is currently open based on time and weekday.
+ */
 fun isBranchOpen(openTime: String, closeTime: String): Boolean {
     return try {
 
         val calendar = java.util.Calendar.getInstance()
         val dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK)
 
-        if (dayOfWeek == java.util.Calendar.SUNDAY) {
-            return false
-        }
+        if (dayOfWeek == java.util.Calendar.SUNDAY) return false
 
         val format = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
-
         val nowCal = java.util.Calendar.getInstance()
 
         val openDate = format.parse(openTime)
@@ -496,7 +603,6 @@ fun isBranchOpen(openTime: String, closeTime: String): Boolean {
             openCal.time = openDate
             closeCal.time = closeDate
 
-            // align to today
             openCal.set(
                 nowCal.get(java.util.Calendar.YEAR),
                 nowCal.get(java.util.Calendar.MONTH),
@@ -509,30 +615,32 @@ fun isBranchOpen(openTime: String, closeTime: String): Boolean {
                 nowCal.get(java.util.Calendar.DAY_OF_MONTH)
             )
 
-            // handle overnight cases
             if (closeCal.before(openCal)) {
                 closeCal.add(java.util.Calendar.DAY_OF_MONTH, 1)
             }
 
             nowCal.after(openCal) && nowCal.before(closeCal)
-        } else {
-            false
-        }
+        } else false
 
     } catch (e: Exception) {
         false
     }
 }
 
+/**
+ * Initiates a direct phone call.
+ */
 fun makeDirectCall(context: Context, phoneNumber: String) {
     val intent = Intent(Intent.ACTION_CALL).apply {
         data = Uri.parse("tel:${phoneNumber.trim()}")
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
-
     context.startActivity(intent)
 }
 
+/**
+ * Opens Google Maps navigation with fallback options.
+ */
 fun openGoogleMapsNavigation(context: Context, lat: Double, lng: Double) {
     val gmIntentUri = Uri.parse("google.navigation:q=$lat,$lng")
 
@@ -547,18 +655,14 @@ fun openGoogleMapsNavigation(context: Context, lat: Double, lng: Double) {
 
         val geoUri = Uri.parse("geo:$lat,$lng?q=$lat,$lng")
 
-        val fallbackIntent = Intent(Intent.ACTION_VIEW, geoUri).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-
         try {
-            context.startActivity(fallbackIntent)
+            context.startActivity(
+                Intent(Intent.ACTION_VIEW, geoUri).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
         } catch (e2: Exception) {
 
-            // Fallback 2: browser Google Maps
-            val webUri = Uri.parse(
-                "https://www.google.com/maps/dir/?api=1&destination=$lat,$lng"
-            )
+            val webUri =
+                Uri.parse("https://www.google.com/maps/dir/?api=1&destination=$lat,$lng")
 
             context.startActivity(
                 Intent(Intent.ACTION_VIEW, webUri)
@@ -568,6 +672,9 @@ fun openGoogleMapsNavigation(context: Context, lat: Double, lng: Double) {
     }
 }
 
+/**
+ * Preview of BranchDetailScreen for UI testing in Android Studio.
+ */
 @Preview
 @Composable
 fun PreviewBranchDetail() {

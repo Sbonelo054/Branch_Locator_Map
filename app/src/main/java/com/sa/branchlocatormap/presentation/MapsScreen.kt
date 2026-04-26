@@ -4,17 +4,10 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Canvas
-import android.location.Location
 import android.os.Looper
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -63,7 +55,6 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -83,41 +74,98 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.launch
 
+
+/**
+ * MapsScreen is the main screen responsible for:
+ * - Displaying Google Map with bank branch markers
+ * - Handling location permissions and updates
+ * - Showing search functionality for branches
+ * - Displaying nearby branches in a bottom sheet
+ * - Navigating to branch detail screen
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapsScreen(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
+    /**
+     * ViewModel responsible for map-related logic and data.
+     */
     val viewModel: MapsViewModel = koinViewModel()
+
+    /**
+     * Shared ViewModel used for passing selected branch
+     * between screens (e.g., map → detail screen).
+     */
     val sharedViewModel: BranchSharedViewModel = koinViewModel()
 
-    val branches by viewModel.filteredBranches.collectAsStateWithLifecycle()
+    /**
+     * List of branches filtered by search query.
+     */
+    val filteredBranches by viewModel.filteredBranches.collectAsStateWithLifecycle()
+
+    /**
+     * List of nearest branches based on user location.
+     */
     val nearbyBanks by viewModel.nearbyBranches.collectAsStateWithLifecycle()
+
+    /**
+     * Current search query entered by the user.
+     */
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
 
+    /**
+     * Android context used for system services.
+     */
     val context = LocalContext.current
+
+    /**
+     * Coroutine scope tied to composable lifecycle.
+     */
     val scope = rememberCoroutineScope()
 
+    /**
+     * Tracks whether location permission has been granted.
+     */
     var hasPermission by remember { mutableStateOf(false) }
+
+    /**
+     * Ensures camera focuses on user location only once.
+     */
     var hasFocusedOnUser by remember { mutableStateOf(false) }
 
+    /**
+     * Camera state for controlling Google Map viewport.
+     */
     val cameraPositionState = rememberCameraPositionState()
 
+    /**
+     * Launcher for requesting location permission at runtime.
+     */
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         hasPermission = granted
     }
 
+    /**
+     * Triggers location permission request on first composition.
+     */
     LaunchedEffect(Unit) {
         permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
+    /**
+     * Fused location provider for receiving location updates.
+     */
     val fusedLocationClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
     }
 
+    /**
+     * Location request configuration (update interval + accuracy).
+     */
     val locationRequest = remember {
         LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY,
@@ -125,14 +173,24 @@ fun MapsScreen(
         ).setMinUpdateIntervalMillis(1500).build()
     }
 
+    /**
+     * Callback for receiving location updates from system.
+     */
     val locationCallback = remember {
         object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
+
                 val location = result.lastLocation ?: return
                 val latLng = LatLng(location.latitude, location.longitude)
 
+                /**
+                 * Update ViewModel with current location.
+                 */
                 viewModel.updateLocation(latLng)
 
+                /**
+                 * Move camera to user location only once.
+                 */
                 if (!hasFocusedOnUser) {
                     hasFocusedOnUser = true
 
@@ -146,13 +204,19 @@ fun MapsScreen(
         }
     }
 
+    /**
+     * Handles starting and stopping location updates
+     * based on permission state and composable lifecycle.
+     */
     DisposableEffect(hasPermission) {
+
         if (hasPermission &&
             ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
+
             fusedLocationClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
@@ -165,10 +229,24 @@ fun MapsScreen(
         }
     }
 
+    /**
+     * Bottom sheet state for nearby branches UI.
+     */
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    /**
+     * Controls visibility of bottom sheet.
+     */
     var showSheet by remember { mutableStateOf(false) }
+
+    /**
+     * Ensures bottom sheet is shown only once initially.
+     */
     var hasShownSheet by remember { mutableStateOf(false) }
 
+    /**
+     * Triggers bottom sheet when nearby branches are available.
+     */
     LaunchedEffect(nearbyBanks) {
         if (nearbyBanks.isNotEmpty() && !hasShownSheet) {
             showSheet = true
@@ -176,8 +254,14 @@ fun MapsScreen(
         }
     }
 
+    /**
+     * Root container for map + UI overlays.
+     */
     Box(modifier = modifier.fillMaxSize()) {
 
+        /**
+         * Google Map displaying branch markers.
+         */
         GoogleMap(
             modifier = Modifier.matchParentSize(),
             cameraPositionState = cameraPositionState,
@@ -189,11 +273,18 @@ fun MapsScreen(
             )
         ) {
 
+            /**
+             * Custom marker icon for bank branches.
+             */
             val markerIcon = remember {
                 createMarkerIcon(context, R.drawable.ic_bank)
             }
-            LaunchedEffect(branches.firstOrNull()) {
-                branches.firstOrNull()?.let {
+
+            /**
+             * Moves camera to first branch on initial load.
+             */
+            LaunchedEffect(filteredBranches.firstOrNull()) {
+                filteredBranches.firstOrNull()?.let {
                     cameraPositionState.animate(
                         CameraUpdateFactory.newLatLngZoom(
                             LatLng(it.latitude, it.longitude),
@@ -202,9 +293,15 @@ fun MapsScreen(
                     )
                 }
             }
-            branches.forEach { branch ->
+
+            /**
+             * Render markers for all searched bank branches.
+             */
+            filteredBranches.forEach { branch ->
                 Marker(
-                    state = MarkerState(position = LatLng(branch.latitude, branch.longitude)),
+                    state = MarkerState(
+                        position = LatLng(branch.latitude, branch.longitude)
+                    ),
                     title = branch.name,
                     snippet = branch.address,
                     icon = markerIcon,
@@ -217,6 +314,9 @@ fun MapsScreen(
             }
         }
 
+        /**
+         * Search bar displayed on top of map.
+         */
         BranchSearchBar(
             query = searchQuery,
             onQueryChange = { viewModel.onSearchQueryChange(it) },
@@ -227,7 +327,11 @@ fun MapsScreen(
                 .align(Alignment.TopCenter)
         )
 
+        /**
+         * Bottom sheet showing nearby branches.
+         */
         if (showSheet && nearbyBanks.isNotEmpty()) {
+
             ModalBottomSheet(
                 onDismissRequest = { showSheet = false },
                 sheetState = sheetState
@@ -247,6 +351,9 @@ fun MapsScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    /**
+                     * List of nearby branch cards.
+                     */
                     nearbyBanks.forEach { branch ->
 
                         Card(
@@ -267,6 +374,7 @@ fun MapsScreen(
                             ) {
 
                                 Column(modifier = Modifier.weight(1f)) {
+
                                     Text(
                                         text = branch.name,
                                         fontWeight = FontWeight.SemiBold
@@ -288,6 +396,10 @@ fun MapsScreen(
     }
 }
 
+/**
+ * Converts a drawable resource into a Google Maps BitmapDescriptor
+ * used for custom marker icons.
+ */
 fun createMarkerIcon(
     context: Context,
     @DrawableRes resId: Int
@@ -308,10 +420,15 @@ fun createMarkerIcon(
     return BitmapDescriptorFactory.fromBitmap(bitmap)
 }
 
+/**
+ * Search bar used to filter bank branches by name.
+ */
 @Composable
-fun BranchSearchBar(query: String,
-                    onQueryChange: (String) -> Unit,
-                    modifier: Modifier = Modifier) {
+fun BranchSearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
 
     Surface(
         modifier = modifier,

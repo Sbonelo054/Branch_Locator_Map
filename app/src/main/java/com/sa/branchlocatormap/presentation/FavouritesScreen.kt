@@ -29,9 +29,19 @@ import com.sa.branchlocatormap.domain.BankBranchDetail
 import com.sa.branchlocatormap.presentation.viewModel.FavouritesViewModel
 import org.koin.androidx.compose.koinViewModel
 
+/**
+ * Favourites screen that displays all saved bank branches.
+ *
+ * This screen observes favourite branches from [FavouritesViewModel] and
+ * renders either:
+ * - An empty state UI when no favourites exist
+ * - A list of saved branches when data is available
+ *
+ * @param onBranchClick Callback triggered when a branch item is selected.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavouritesScreen(onBranchClick:(BankBranchDetail) -> Unit) {
+fun FavouritesScreen(onBranchClick: (BankBranchDetail) -> Unit) {
     val favouritesViewModel: FavouritesViewModel = koinViewModel()
     val favouritesState by favouritesViewModel.favouriteUiState.collectAsState()
 
@@ -59,6 +69,14 @@ fun FavouritesScreen(onBranchClick:(BankBranchDetail) -> Unit) {
     }
 }
 
+/**
+ * Empty state UI shown when no favourite branches have been saved.
+ *
+ * Displays:
+ * - Animated favorite icon
+ * - Informational text explaining how to add favourites
+ * - Simple usage hint
+ */
 @Composable
 fun EmptyFavouritesScreen() {
 
@@ -80,7 +98,6 @@ fun EmptyFavouritesScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        // Icon container
         Box(
             modifier = Modifier
                 .size(110.dp)
@@ -120,7 +137,6 @@ fun EmptyFavouritesScreen() {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Instruction hint (not a button)
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -155,8 +171,17 @@ fun EmptyFavouritesScreen() {
     }
 }
 
+/**
+ * LazyColumn wrapper that displays a list of bank branches.
+ *
+ * @param onBranchClick Callback when a branch is clicked.
+ * @param branches List of branches to display.
+ */
 @Composable
-fun BankBranchList(onBranchClick: (BankBranchDetail) -> Unit, branches: List<BankBranchDetail>) {
+fun BankBranchList(
+    onBranchClick: (BankBranchDetail) -> Unit,
+    branches: List<BankBranchDetail>
+) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -167,8 +192,24 @@ fun BankBranchList(onBranchClick: (BankBranchDetail) -> Unit, branches: List<Ban
     }
 }
 
+/**
+ * Individual bank branch item displayed in the favourites list.
+ *
+ * Shows:
+ * - Branch name
+ * - Open/closed status
+ * - Address
+ * - Distance
+ * - Navigation CTA
+ *
+ * @param onBranchClick Callback when the item is clicked.
+ * @param branch Branch data to render.
+ */
 @Composable
-fun BankBranchItem(onBranchClick: (BankBranchDetail) -> Unit, branch: BankBranchDetail) {
+fun BankBranchItem(
+    onBranchClick: (BankBranchDetail) -> Unit,
+    branch: BankBranchDetail
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -180,7 +221,6 @@ fun BankBranchItem(onBranchClick: (BankBranchDetail) -> Unit, branch: BankBranch
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
 
-            // Top Row: Name + Status
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -203,7 +243,6 @@ fun BankBranchItem(onBranchClick: (BankBranchDetail) -> Unit, branch: BankBranch
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // Address
             Text(
                 text = branch.address,
                 style = MaterialTheme.typography.bodyMedium,
@@ -212,14 +251,12 @@ fun BankBranchItem(onBranchClick: (BankBranchDetail) -> Unit, branch: BankBranch
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Bottom Row: Distance + CTA
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
-                // Distance pill
                 Surface(
                     shape = MaterialTheme.shapes.extraLarge,
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
@@ -243,11 +280,15 @@ fun BankBranchItem(onBranchClick: (BankBranchDetail) -> Unit, branch: BankBranch
     }
 }
 
+/**
+ * Wrapper composable for rendering bank branch screen content.
+ */
 @Composable
-fun BankBranchScreen(onBranchClick: (BankBranchDetail) -> Unit, branches: List<BankBranchDetail>){
-
+fun BankBranchScreen(
+    onBranchClick: (BankBranchDetail) -> Unit,
+    branches: List<BankBranchDetail>
+) {
     BankBranchList(onBranchClick = onBranchClick, branches = branches)
-
 }
 
 @Preview(showBackground = true)

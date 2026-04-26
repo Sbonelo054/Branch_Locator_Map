@@ -9,6 +9,7 @@ import com.sa.branchlocatormap.domain.BankBranchDetail
  * or offline support before integrating a real backend.
  */
 class BankBranchLocalDataSource {
+
     /**
      * A list of available bank branches.
      *
