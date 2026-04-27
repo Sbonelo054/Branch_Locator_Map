@@ -68,6 +68,7 @@ import com.sa.branchlocatormap.presentation.viewModel.BranchSharedViewModel
 import com.sa.branchlocatormap.presentation.viewModel.MapsViewModel
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -344,7 +345,7 @@ fun MapsScreen(
                 ) {
 
                     Text(
-                        text = "Nearby branches",
+                        text = stringResource(R.string.nearby_branches),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -451,7 +452,7 @@ fun BranchSearchBar(
             TextField(
                 value = query,
                 onValueChange = { onQueryChange(it) },
-                placeholder = { Text("Search branches...") },
+                placeholder = { Text(stringResource(R.string.search_branches)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = TextFieldDefaults.colors(

@@ -64,11 +64,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.sa.branchlocatormap.R
 import com.sa.branchlocatormap.domain.model.BankBranchDetail
 import com.sa.branchlocatormap.presentation.viewModel.BranchSharedViewModel
 import com.sa.branchlocatormap.presentation.viewModel.FavouritesViewModel
@@ -227,8 +229,8 @@ fun BranchDetailScreen(navController: NavController) {
          */
         InfoCard {
             Column {
-                DetailRow(Icons.Default.LocationOn, "Address", branch.address)
-                DetailRow(Icons.Default.Phone, "Phone", branch.phone)
+                DetailRow(Icons.Default.LocationOn, stringResource(R.string.address), branch.address)
+                DetailRow(Icons.Default.Phone, stringResource(R.string.phone), branch.phone)
                 DetailRow(
                     Icons.Default.AccessTime,
                     "Hours",
@@ -256,7 +258,7 @@ fun BranchDetailScreen(navController: NavController) {
             Column {
 
                 Text(
-                    "Services",
+                    stringResource(R.string.services),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -268,7 +270,7 @@ fun BranchDetailScreen(navController: NavController) {
                 if (services.isEmpty()) {
 
                     Text(
-                        "No services available",
+                        stringResource(R.string.no_services_available),
                         color = Color.Gray,
                         style = MaterialTheme.typography.bodySmall
                     )
@@ -318,7 +320,7 @@ fun StatusBadge(isOpen: Boolean) {
             Color.Red.copy(alpha = 0.2f)
     ) {
         Text(
-            text = if (isOpen) "Open Now" else "Closed",
+            text = if (isOpen) stringResource(R.string.open_now) else stringResource(R.string.closed),
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
             color = Color.White,
             style = MaterialTheme.typography.labelMedium
@@ -407,7 +409,7 @@ fun ActionButtons(branchDetail: BankBranchDetail) {
         ) {
             Icon(Icons.Default.Directions, null)
             Spacer(modifier = Modifier.width(6.dp))
-            Text("Directions")
+            Text(stringResource(R.string.directions))
         }
 
         val callPermissionLauncher = rememberLauncherForActivityResult(
@@ -434,7 +436,7 @@ fun ActionButtons(branchDetail: BankBranchDetail) {
         ) {
             Icon(Icons.Default.Call, null)
             Spacer(modifier = Modifier.width(6.dp))
-            Text("Call")
+            Text(stringResource(R.string.call))
         }
     }
 }
@@ -446,16 +448,17 @@ fun ActionButtons(branchDetail: BankBranchDetail) {
 fun OpeningHoursSection(branch: BankBranchDetail) {
     Column {
         Text(
-            "Opening Hours",
+            stringResource(R.string.opening_hours),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        OpeningHourRow("Mon - Fri", "${branch.openTime} - ${branch.closeTime}", true)
-        OpeningHourRow("Saturday", "09:00 - 13:00", false)
-        OpeningHourRow("Sunday", "Closed", false)
+        OpeningHourRow(stringResource(R.string.mon_fri), "${branch.openTime} - ${branch.closeTime}", false)
+        OpeningHourRow(stringResource(R.string.saturday),
+            stringResource(R.string._09_00_13_00), false)
+        OpeningHourRow(stringResource(R.string.sunday), stringResource(R.string.closed), false)
     }
 }
 
@@ -627,7 +630,7 @@ fun isBranchOpen(openTime: String, closeTime: String): Boolean {
             nowCal.after(openCal) && nowCal.before(closeCal)
         } else false
 
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         false
     }
 }
@@ -650,13 +653,13 @@ fun openGoogleMapsNavigation(context: Context, lat: Double, lng: Double) {
     val gmIntentUri = Uri.parse("google.navigation:q=$lat,$lng")
 
     val mapIntent = Intent(Intent.ACTION_VIEW, gmIntentUri).apply {
-        setPackage("com.google.android.apps.maps")
+        setPackage(context.getString(R.string.com_google_android_apps_maps))
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
     try {
         context.startActivity(mapIntent)
-    } catch (e: Exception) {
+    } catch (_: Exception) {
 
         val geoUri = Uri.parse("geo:$lat,$lng?q=$lat,$lng")
 
@@ -664,7 +667,7 @@ fun openGoogleMapsNavigation(context: Context, lat: Double, lng: Double) {
             context.startActivity(
                 Intent(Intent.ACTION_VIEW, geoUri).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
-        } catch (e2: Exception) {
+        } catch (_: Exception) {
 
             val webUri =
                 Uri.parse("https://www.google.com/maps/dir/?api=1&destination=$lat,$lng")

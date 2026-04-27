@@ -22,10 +22,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sa.branchlocatormap.R
 import com.sa.branchlocatormap.domain.model.BankBranchDetail
 import com.sa.branchlocatormap.presentation.viewModel.FavouritesViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -56,7 +58,7 @@ fun FavouritesScreen(onBranchClick: (BankBranchDetail) -> Unit) {
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Text(
-                text = "Favourites",
+                text = stringResource(R.string.favourites),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold
             )
@@ -121,7 +123,7 @@ fun EmptyFavouritesScreen() {
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "No saved branches yet",
+            text = stringResource(R.string.no_saved_branches_yet),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
@@ -129,7 +131,7 @@ fun EmptyFavouritesScreen() {
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = "Keep your preferred branches in one place for quick access anytime.",
+            text = stringResource(R.string.keep_your_preferred_branches_in_one_place_for_quick_access_anytime),
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray,
             modifier = Modifier.padding(horizontal = 32.dp),
@@ -142,7 +144,7 @@ fun EmptyFavouritesScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "How it works",
+                text = stringResource(R.string.how_it_works),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.SemiBold
@@ -163,7 +165,7 @@ fun EmptyFavouritesScreen() {
                 Spacer(modifier = Modifier.width(6.dp))
 
                 Text(
-                    text = "Tap heart on a branch",
+                    text = stringResource(R.string.tap_heart_on_a_branch),
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
@@ -233,7 +235,7 @@ fun BankBranchItem(
                 )
 
                 Text(
-                    text = if (branch.isOpen) "Open" else "Closed",
+                    text = if (branch.isOpen) stringResource(R.string.open) else stringResource(R.string.closed),
                     color = if (branch.isOpen)
                         Color(0xFF2E7D32)
                     else
@@ -271,7 +273,7 @@ fun BankBranchItem(
                 }
 
                 Text(
-                    text = "View Details →",
+                    text = stringResource(R.string.view_details),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.SemiBold

@@ -28,7 +28,7 @@ import org.koin.androidx.compose.koinViewModel
  * This list defines the screens that appear in the bottom navigation and their order:
  * - Map screen
  * - Favourites screen
- * - History screen
+ * - More screen
  *
  * Each item is represented using [BottomNavItemScreen], which contains
  * route, icon, and title information for navigation rendering.
@@ -36,7 +36,7 @@ import org.koin.androidx.compose.koinViewModel
 val items = listOf(
     BottomNavItemScreen.Map,
     BottomNavItemScreen.Favourites,
-    BottomNavItemScreen.History
+    BottomNavItemScreen.More
 )
 
 /**
@@ -163,10 +163,10 @@ fun MainScreen() {
             }
 
             /**
-             * History screen destination.
+             * More screen destination.
              */
-            composable(BottomNavItemScreen.History.route) {
-                HistoryScreen()
+            composable(BottomNavItemScreen.More.route) {
+                MoreScreen()
             }
 
             /**

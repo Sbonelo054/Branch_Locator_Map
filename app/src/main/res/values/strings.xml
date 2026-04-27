@@ -1,4 +1,27 @@
 <resources>
     <string name="app_name">Branch Locator Map</string>
     <string name="google_maps_api_key">AIzaSyCbgfdJx3OuHO0UVaetsSVQJU8krWkBwkk</string>
+    <string name="address">Address</string>
+    <string name="phone">Phone</string>
+    <string name="services">Services</string>
+    <string name="no_services_available">No services available</string>
+    <string name="open_now">Open Now</string>
+    <string name="closed">Closed</string>
+    <string name="directions">Directions</string>
+    <string name="call">Call</string>
+    <string name="opening_hours">Opening Hours</string>
+    <string name="mon_fri">Mon - Fri</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+    <string name="_09_00_13_00">09:00 - 13:00</string>
+    <string name="favourites">Favourites</string>
+    <string name="no_saved_branches_yet">No saved branches yet</string>
+    <string name="keep_your_preferred_branches_in_one_place_for_quick_access_anytime">Keep your preferred branches in one place for quick access anytime.</string>
+    <string name="how_it_works">How it works</string>
+    <string name="tap_heart_on_a_branch">Tap heart on a branch</string>
+    <string name="open">Open</string>
+    <string name="view_details">View Details →</string>
+    <string name="nearby_branches">Nearby branches</string>
+    <string name="search_branches">Search branches...</string>
+    <string name="com_google_android_apps_maps">com.google.android.apps.maps</string>
 </resources>

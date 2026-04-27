@@ -42,10 +42,10 @@ sealed class BottomNavItemScreen(
     /**
      * Screen showing navigation/history-related data.
      */
-    data object History : BottomNavItemScreen(
-        route = "history_screen",
-        icon = R.drawable.ic_history,
-        title = "History"
+    data object More : BottomNavItemScreen(
+        route = "more_screen",
+        icon = R.drawable.ic_more,
+        title = "More"
     )
 }
 
