@@ -14,13 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Directions
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Feedback
-import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,7 +33,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.sa.branchlocatormap.R
+import com.sa.branchlocatormap.presentation.components.BaseInfoScaffoldScreen
 import com.sa.branchlocatormap.presentation.ui.SectionTitle
 
 /**
@@ -49,18 +48,18 @@ import com.sa.branchlocatormap.presentation.ui.SectionTitle
  *
  * It also includes a support action allowing users to send feedback.
  *
- * The layout is built using [BaseInfoScreen] and consists of:
+ * The layout is built using [BaseInfoScaffoldScreen] and consists of:
  * - Informational help cards ([HelpCard])
  * - Action items ([HelpActionCard])
  *
  * @see sendEmail
  */
 @Composable
-fun HelpSupportScreen() {
+fun HelpSupportScreen(navController: NavController) {
 
-    BaseInfoScreen(
+    BaseInfoScaffoldScreen(
         title = stringResource(R.string.help_support),
-        icon = Icons.Default.HelpOutline
+        onBackClick = { navController.popBackStack() }
     ) {
 
         SectionTitle(stringResource(R.string.getting_started))

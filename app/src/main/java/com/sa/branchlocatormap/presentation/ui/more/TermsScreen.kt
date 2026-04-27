@@ -5,7 +5,9 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
 import com.sa.branchlocatormap.R
+import com.sa.branchlocatormap.presentation.components.BaseInfoScaffoldScreen
 
 /**
  * Displays the app's terms of service.
@@ -13,10 +15,11 @@ import com.sa.branchlocatormap.R
  * Outlines basic rules for using the application responsibly.
  */
 @Composable
-fun TermsScreen() {
-    BaseInfoScreen(
+fun TermsScreen(navController: NavController) {
+
+    BaseInfoScaffoldScreen(
         title = stringResource(R.string.terms_of_service),
-        icon = Icons.Default.Description
+        onBackClick = { navController.popBackStack() }
     ) {
 
         InfoCardSection {

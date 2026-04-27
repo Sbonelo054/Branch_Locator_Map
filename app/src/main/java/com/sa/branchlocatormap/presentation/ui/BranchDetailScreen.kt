@@ -86,6 +86,8 @@ import java.util.Locale
 @Composable
 fun BranchDetailScreen(navController: NavController) {
 
+
+
     // Shared ViewModel holding the currently selected branch
     val sharedViewModel: BranchSharedViewModel = koinViewModel()
 

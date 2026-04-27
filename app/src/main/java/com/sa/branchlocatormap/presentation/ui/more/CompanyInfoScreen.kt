@@ -11,7 +11,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.sa.branchlocatormap.R
+import com.sa.branchlocatormap.presentation.components.BaseInfoScaffoldScreen
 
 /**
  * Displays general information about the application and its purpose.
@@ -20,7 +22,7 @@ import com.sa.branchlocatormap.R
  * - What the app does
  * - The core goal behind the product
  *
- * It uses [BaseInfoScreen] to maintain a consistent layout across
+ * It uses [BaseInfoScaffoldScreen] to maintain a consistent layout across
  * informational screens, including a header with an icon and title.
  *
  * Content is presented inside an [InfoCardSection] to ensure
@@ -38,11 +40,11 @@ import com.sa.branchlocatormap.R
  * - Informational card with descriptive text
  */
 @Composable
-fun CompanyInfoScreen() {
+fun CompanyInfoScreen(navController: NavController) {
 
-    BaseInfoScreen(
+    BaseInfoScaffoldScreen(
         title = stringResource(R.string.company_info),
-        icon = Icons.Default.Business
+        onBackClick = { navController.popBackStack() }
     ) {
 
         InfoCardSection {

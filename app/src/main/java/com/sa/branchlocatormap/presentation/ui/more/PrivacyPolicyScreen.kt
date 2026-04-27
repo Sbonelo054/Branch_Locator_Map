@@ -5,7 +5,9 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
 import com.sa.branchlocatormap.R
+import com.sa.branchlocatormap.presentation.components.BaseInfoScaffoldScreen
 
 /**
  * Displays the app's privacy policy information.
@@ -13,11 +15,11 @@ import com.sa.branchlocatormap.R
  * Shows how user data (location) is used within the app.
  */
 @Composable
-fun PrivacyPolicyScreen() {
+fun PrivacyPolicyScreen(navController: NavController) {
 
-    BaseInfoScreen(
+    BaseInfoScaffoldScreen(
         title = stringResource(R.string.privacy_policy),
-        icon = Icons.Default.Security
+        onBackClick = { navController.popBackStack() }
     ) {
         InfoCardSection {
             Text(stringResource(R.string.we_only_use_location_to_show_nearby_branches))

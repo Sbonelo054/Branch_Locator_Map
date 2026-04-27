@@ -11,7 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.sa.branchlocatormap.R
+import com.sa.branchlocatormap.presentation.components.BaseInfoScaffoldScreen
 
 /**
 * Displays a feedback screen where users are encouraged to share their thoughts
@@ -21,7 +23,7 @@ import com.sa.branchlocatormap.R
 * - Encourages users to provide feedback
 * - Explains the purpose and value of their input
 *
-* It uses [BaseInfoScreen] to maintain a consistent header layout (icon + title),
+* It uses [BaseInfoScaffoldScreen] to maintain a consistent header layout (icon + title),
 * and [InfoCardSection] to present feedback-related messaging in a structured card.
 *
 * Unlike other contact-related screens, this screen is intentionally simple and
@@ -29,13 +31,13 @@ import com.sa.branchlocatormap.R
 * (e.g., navigating to an external feedback form or email intent in a future enhancement).
 */
 @Composable
-fun FeedbackScreen() {
-
-    BaseInfoScreen(
+fun FeedbackScreen(navController: NavController) {
+    BaseInfoScaffoldScreen(
         title = stringResource(R.string.feedback),
-        icon = Icons.Default.Feedback
+        onBackClick = {
+            navController.popBackStack()
+        }
     ) {
-
         InfoCardSection {
 
             Text(

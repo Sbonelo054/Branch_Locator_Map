@@ -183,28 +183,46 @@ fun MainScreen() {
                 BranchDetailScreen(navController)
             }
 
+            /**
+             * Help support screen destination
+             */
             composable(MoreNavHost.HELP_SUPPORT) {
-                HelpSupportScreen()
+                HelpSupportScreen(navController)
             }
 
+            /**
+             * Contact us screen destination
+             */
             composable(MoreNavHost.CONTACT_US) {
-                ContactUsScreen()
+                ContactUsScreen(navController)
             }
 
+            /**
+             * Feedback screen destination
+             */
             composable(MoreNavHost.FEEDBACK) {
-                FeedbackScreen()
+                FeedbackScreen(navController)
             }
 
+            /**
+             * Company info screen destination
+             */
             composable(MoreNavHost.COMPANY_INFO) {
-                CompanyInfoScreen()
+                CompanyInfoScreen(navController)
             }
 
+            /**
+             * Privacy policy screen destination
+             */
             composable(MoreNavHost.PRIVACY_POLICY) {
-                PrivacyPolicyScreen()
+                PrivacyPolicyScreen(navController)
             }
 
+            /**
+             * Terms screen destination
+             */
             composable(MoreNavHost.TERMS) {
-                TermsScreen()
+                TermsScreen(navController)
             }
         }
     }

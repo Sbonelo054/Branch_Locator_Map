@@ -1,14 +1,18 @@
 package com.sa.branchlocatormap.presentation.ui.more
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,7 +24,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.sa.branchlocatormap.R
+import com.sa.branchlocatormap.presentation.components.BaseInfoScaffoldScreen
 
 /**
  * Displays contact information for users to reach support or the organization.
@@ -30,7 +36,7 @@ import com.sa.branchlocatormap.R
  * - Phone number
  * - Physical location
  *
- * It uses [BaseInfoScreen] to maintain a consistent layout with a header
+ * It uses [BaseInfoScaffoldScreen] to maintain a consistent layout with a header
  * (icon + title), and [InfoCardSection] to group contact details in a
  * visually structured card.
  *
@@ -52,11 +58,11 @@ import com.sa.branchlocatormap.R
  *
  */
 @Composable
-fun ContactUsScreen() {
+fun ContactUsScreen(navController: NavController) {
 
-    BaseInfoScreen(
+    BaseInfoScaffoldScreen(
         title = stringResource(R.string.contact_us),
-        icon = Icons.Default.Email
+        onBackClick = {navController.popBackStack()}
     ) {
 
         InfoCardSection {
@@ -117,6 +123,41 @@ fun ContactRow(icon: ImageVector, title: String, value: String) {
         Column {
             Text(title, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
             Text(value, fontWeight = FontWeight.Medium)
+        }
+    }
+}
+
+/**
+ * A reusable card container used to display grouped informational content.
+ *
+ * This composable wraps content inside a [Card] with consistent styling,
+ * including:
+ * - Full width layout
+ * - Rounded corners using [MaterialTheme.shapes.large]
+ * - Subtle elevation for visual separation
+ * - Standard inner padding
+ *
+ * It is designed to keep UI consistent across screens such as:
+ * - Help & Support
+ * - About / Company Info
+ * - Privacy / Terms
+ * - Any informational sections
+ *
+ * The [content] lambda is scoped to [ColumnScope], allowing flexible
+ * vertical layouts such as:
+ * - Text blocks
+ * - Rows with icons
+ * - Lists of items
+ */
+@Composable
+fun InfoCardSection(content: @Composable ColumnScope.() -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            content()
         }
     }
 }
