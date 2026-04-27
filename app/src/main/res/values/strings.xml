@@ -24,4 +24,6 @@
     <string name="nearby_branches">Nearby branches</string>
     <string name="search_branches">Search branches...</string>
     <string name="com_google_android_apps_maps">com.google.android.apps.maps</string>
+    <string name="no_branches_found">No branches found</string>
+    <string name="try_a_different_name_or_keyword">Try a different name or keyword</string>
 </resources>

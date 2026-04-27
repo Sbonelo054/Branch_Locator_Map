@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,11 +18,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -316,6 +324,55 @@ fun MapsScreen(
         }
 
         /**
+         * Displays an "empty state" UI when:
+         * - The user has entered a search query
+         * - AND no matching bank branches are found
+         *
+         * This provides user feedback instead of showing a blank map,
+         * improving usability and search clarity.
+         */
+        if (searchQuery.isNotBlank() && filteredBranches.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .then(Modifier)
+                )
+
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = stringResource(R.string.no_branches_found),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.Black
+                        )
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        Text(
+                            text = stringResource(R.string.try_a_different_name_or_keyword),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.DarkGray
+                        )
+                    }
+                }
+            }
+        }
+
+        /**
          * Search bar displayed on top of map.
          */
         BranchSearchBar(
@@ -342,15 +399,15 @@ fun MapsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
+                        .navigationBarsPadding()
                 ) {
-
                     Text(
                         text = stringResource(R.string.nearby_branches),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     /**
                      * List of nearby branch cards.
@@ -360,34 +417,94 @@ fun MapsScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 6.dp)
+                                .padding(vertical = 8.dp)
                                 .clickable {
                                     sharedViewModel.selectBranch(branch)
                                     navController.navigate(Screen.BRANCH_DETAIL)
                                     showSheet = false
-                                }
+                                },
+                            shape = RoundedCornerShape(14.dp)
                         ) {
+
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                    .padding(14.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(42.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.AccountBalance,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.width(12.dp))
 
                                 Column(modifier = Modifier.weight(1f)) {
 
                                     Text(
                                         text = branch.name,
+                                        style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.SemiBold
                                     )
 
-                                    Text(
-                                        text = branch.address,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = Color.Gray,
-                                        maxLines = 1
-                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Place,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(14.dp),
+                                                tint = Color.Gray
+                                            )
+
+                                            Spacer(modifier = Modifier.width(4.dp))
+
+                                            Text(
+                                                text = branch.distance,
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = Color.Gray
+                                            )
+                                        }
+
+                                        Spacer(modifier = Modifier.width(12.dp))
+
+                                        Surface(
+                                            shape = RoundedCornerShape(50),
+                                            color = if (branch.isOpen)
+                                                Color(0xFFE8F5E9)
+                                            else
+                                                Color(0xFFFFEBEE)
+                                        ) {
+                                            Text(
+                                                text = if (branch.isOpen) stringResource(R.string.open) else stringResource(R.string.closed),
+                                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = if (branch.isOpen)
+                                                    Color(0xFF2E7D32)
+                                                else
+                                                    Color(0xFFC62828)
+                                            )
+                                        }
+                                    }
                                 }
+
+                                Icon(
+                                    imageVector = Icons.Default.ChevronRight,
+                                    contentDescription = null,
+                                    tint = Color.Gray
+                                )
                             }
                         }
                     }
@@ -437,7 +554,6 @@ fun BranchSearchBar(
         tonalElevation = 6.dp,
         shadowElevation = 8.dp
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -455,6 +571,14 @@ fun BranchSearchBar(
                 placeholder = { Text(stringResource(R.string.search_branches)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Search
+                ),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        onQueryChange(query)
+                    }
+                ),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,

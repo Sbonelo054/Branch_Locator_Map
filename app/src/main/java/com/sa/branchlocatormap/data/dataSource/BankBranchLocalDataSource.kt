@@ -228,7 +228,7 @@ class BankBranchLocalDataSource {
             name = "Rivonia Village Branch, Sandton",
             distance = "~5 km",
             address = "Rivonia Village Shopping Centre, Rivonia Rd, Rivonia, Sandton",
-            isOpen = false,
+            isOpen = true,
             openTime = "08:00",
             closeTime = "17:00",
             isFavourite = false,
