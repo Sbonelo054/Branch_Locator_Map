@@ -67,3 +67,14 @@ object Screen {
      */
     const val BRANCH_DETAIL = "branch_detail_screen"
 }
+
+object MoreNavHost {
+    const val HELP_SUPPORT = "help_support_screen"
+    const val CONTACT_US = "contact_us_screen"
+    const val FEEDBACK = "feedback_screen"
+
+    const val COMPANY_INFO = "company_info_screen"
+    const val PRIVACY_POLICY = "privacy_policy_screen"
+    const val TERMS = "terms_screen"
+}
+

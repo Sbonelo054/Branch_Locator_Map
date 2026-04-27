@@ -1,9 +1,11 @@
 package com.sa.branchlocatormap.presentation.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Canvas
+import android.location.Location
 import android.os.Looper
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -92,6 +95,7 @@ import kotlinx.coroutines.launch
  * - Displaying nearby branches in a bottom sheet
  * - Navigating to branch detail screen
  */
+@SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapsScreen(
@@ -123,6 +127,11 @@ fun MapsScreen(
      * Current search query entered by the user.
      */
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+
+    /**
+     * Current location of the user
+     */
+    val currentLocation by viewModel.currentLocation.collectAsStateWithLifecycle()
 
     /**
      * Android context used for system services.
@@ -399,7 +408,6 @@ fun MapsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .navigationBarsPadding()
                 ) {
                     Text(
                         text = stringResource(R.string.nearby_branches),
@@ -413,7 +421,6 @@ fun MapsScreen(
                      * List of nearby branch cards.
                      */
                     nearbyBanks.forEach { branch ->
-
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -471,27 +478,43 @@ fun MapsScreen(
 
                                             Spacer(modifier = Modifier.width(4.dp))
 
-                                            Text(
-                                                text = branch.distance,
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = Color.Gray
-                                            )
+                                            Column{
+                                                if(currentLocation != null) {
+                                                    val results = FloatArray(1)
+                                                    Location.distanceBetween(
+                                                        currentLocation?.latitude?: return@Column,
+                                                        currentLocation?.longitude?: return@Column,
+                                                        branch.latitude,
+                                                        branch.longitude,
+                                                        results
+                                                    )
+                                                    Text(
+                                                        text = String.format("%.2f Km", results[0] / 1000),
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        color = Color.Gray
+                                                    )
+                                                }
+                                            }
                                         }
 
                                         Spacer(modifier = Modifier.width(12.dp))
-
+                                        val isOpenNow = isBranchOpen(branch.openTime, branch.closeTime)
                                         Surface(
                                             shape = RoundedCornerShape(50),
-                                            color = if (branch.isOpen)
+                                            color = if (isOpenNow)
                                                 Color(0xFFE8F5E9)
                                             else
                                                 Color(0xFFFFEBEE)
                                         ) {
+                                            /**
+                                             * Determines whether the branch is currently open
+                                             */
+
                                             Text(
-                                                text = if (branch.isOpen) stringResource(R.string.open) else stringResource(R.string.closed),
+                                                text = if (isOpenNow) stringResource(R.string.open) else stringResource(R.string.closed),
                                                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                                                 style = MaterialTheme.typography.labelSmall,
-                                                color = if (branch.isOpen)
+                                                color = if (isOpenNow)
                                                     Color(0xFF2E7D32)
                                                 else
                                                     Color(0xFFC62828)

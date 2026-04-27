@@ -39,9 +39,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.sa.branchlocatormap.presentation.navigation.MoreNavHost
 
 @Composable
-fun MoreScreen() {
+fun MoreScreen(navController: NavController) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -65,14 +67,26 @@ fun MoreScreen() {
         ) {
 
             SectionTitle("Support")
-            MoreItem("Help & Support", Icons.Default.HelpOutline)
-            MoreItem("Contact Us", Icons.Default.Email)
-            MoreItem("Send Feedback", Icons.Default.Feedback)
+            MoreItem("Help & Support", Icons.Default.HelpOutline) {
+                navController.navigate(MoreNavHost.HELP_SUPPORT)
+            }
+            MoreItem("Contact Us", Icons.Default.Email) {
+                navController.navigate(MoreNavHost.CONTACT_US)
+            }
+            MoreItem("Send Feedback", Icons.Default.Feedback) {
+                navController.navigate(MoreNavHost.FEEDBACK)
+            }
 
             SectionTitle("About")
-            MoreItem("Company Info", Icons.Default.Business)
-            MoreItem("Privacy Policy", Icons.Default.Security)
-            MoreItem("Terms of Service", Icons.Default.Description)
+            MoreItem("Company Info", Icons.Default.Business) {
+                navController.navigate(MoreNavHost.COMPANY_INFO)
+            }
+            MoreItem("Privacy Policy", Icons.Default.Security) {
+                navController.navigate(MoreNavHost.PRIVACY_POLICY)
+            }
+            MoreItem("Terms of Service", Icons.Default.Description) {
+                navController.navigate(MoreNavHost.TERMS)
+            }
         }
     }
 }

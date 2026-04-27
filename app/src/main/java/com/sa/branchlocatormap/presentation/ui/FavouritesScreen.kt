@@ -1,5 +1,6 @@
 package com.sa.branchlocatormap.presentation.ui
 
+import android.location.Location
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -203,7 +204,6 @@ fun BankBranchList(
  * - Open/closed status
  * - Address
  * - Distance
- * - Navigation CTA
  *
  * @param onBranchClick Callback when the item is clicked.
  * @param branch Branch data to render.
@@ -213,6 +213,8 @@ fun BankBranchItem(
     onBranchClick: (BankBranchDetail) -> Unit,
     branch: BankBranchDetail
 ) {
+    val isOpenNow = isBranchOpen(branch.openTime, branch.closeTime)
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -235,8 +237,8 @@ fun BankBranchItem(
                 )
 
                 Text(
-                    text = if (branch.isOpen) stringResource(R.string.open) else stringResource(R.string.closed),
-                    color = if (branch.isOpen)
+                    text = if (isOpenNow) stringResource(R.string.open) else stringResource(R.string.closed),
+                    color = if (isOpenNow)
                         Color(0xFF2E7D32)
                     else
                         MaterialTheme.colorScheme.error,

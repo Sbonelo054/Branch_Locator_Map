@@ -19,7 +19,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.sa.branchlocatormap.presentation.navigation.BottomNavItemScreen
+import com.sa.branchlocatormap.presentation.navigation.MoreNavHost
 import com.sa.branchlocatormap.presentation.navigation.Screen
+import com.sa.branchlocatormap.presentation.ui.more.CompanyInfoScreen
+import com.sa.branchlocatormap.presentation.ui.more.ContactUsScreen
+import com.sa.branchlocatormap.presentation.ui.more.FeedbackScreen
+import com.sa.branchlocatormap.presentation.ui.more.HelpSupportScreen
+import com.sa.branchlocatormap.presentation.ui.more.PrivacyPolicyScreen
+import com.sa.branchlocatormap.presentation.ui.more.TermsScreen
 import com.sa.branchlocatormap.presentation.viewModel.BranchSharedViewModel
 import org.koin.androidx.compose.koinViewModel
 /**
@@ -166,7 +173,7 @@ fun MainScreen() {
              * More screen destination.
              */
             composable(BottomNavItemScreen.More.route) {
-                MoreScreen()
+                MoreScreen(navController)
             }
 
             /**
@@ -174,6 +181,30 @@ fun MainScreen() {
              */
             composable(Screen.BRANCH_DETAIL) {
                 BranchDetailScreen(navController)
+            }
+
+            composable(MoreNavHost.HELP_SUPPORT) {
+                HelpSupportScreen()
+            }
+
+            composable(MoreNavHost.CONTACT_US) {
+                ContactUsScreen()
+            }
+
+            composable(MoreNavHost.FEEDBACK) {
+                FeedbackScreen()
+            }
+
+            composable(MoreNavHost.COMPANY_INFO) {
+                CompanyInfoScreen()
+            }
+
+            composable(MoreNavHost.PRIVACY_POLICY) {
+                PrivacyPolicyScreen()
+            }
+
+            composable(MoreNavHost.TERMS) {
+                TermsScreen()
             }
         }
     }

@@ -71,6 +71,7 @@ class MapsViewModel(
      * Current user location.
      */
     private val _currentLocation = MutableStateFlow<LatLng?>(null)
+    val currentLocation = _currentLocation.asStateFlow()
 
     /**
      * Updates user location (used for nearby branch calculation).

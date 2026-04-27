@@ -109,7 +109,9 @@ fun BranchDetailScreen(navController: NavController) {
     // Local UI state for favourite toggle
     var isFavourite by remember { mutableStateOf(branch.isFavourite) }
 
-    // Used to periodically refresh time-based UI logic
+    /**
+     * Used to periodically refresh time-based UI logic
+     */
     val currentTime = remember { mutableStateOf(Calendar.getInstance()) }
 
     /**
@@ -122,7 +124,9 @@ fun BranchDetailScreen(navController: NavController) {
         }
     }
 
-    // Determines whether the branch is currently open
+    /**
+     * Determines whether the branch is currently open
+     */
     val isOpenNow = isBranchOpen(branch.openTime, branch.closeTime)
 
     Column(
