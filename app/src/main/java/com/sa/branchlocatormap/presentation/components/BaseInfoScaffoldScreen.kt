@@ -85,8 +85,8 @@ fun BaseInfoScaffoldScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(horizontal = 0.dp),
+            verticalArrangement = Arrangement.spacedBy(0.dp),
             content = content
         )
     }

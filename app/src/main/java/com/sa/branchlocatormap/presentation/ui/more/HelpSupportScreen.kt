@@ -5,10 +5,12 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -62,34 +64,38 @@ fun HelpSupportScreen(navController: NavController) {
         onBackClick = { navController.popBackStack() }
     ) {
 
-        SectionTitle(stringResource(R.string.getting_started))
+        Column(modifier = Modifier.fillMaxSize()
+            .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            SectionTitle(stringResource(R.string.getting_started))
 
-        HelpCard(
-            title = stringResource(R.string.finding_a_branch),
-            desc = stringResource(R.string.use_the_map_or_search_bar_to_locate_nearby_branches_quickly),
-            icon = Icons.Default.Map
-        )
+            HelpCard(
+                title = stringResource(R.string.finding_a_branch),
+                desc = stringResource(R.string.use_the_map_or_search_bar_to_locate_nearby_branches_quickly),
+                icon = Icons.Default.Map
+            )
 
-        HelpCard(
-            title = stringResource(R.string.saving_favourites),
-            desc = stringResource(R.string.tap_the_heart_icon_on_any_branch_to_save_it),
-            icon = Icons.Default.FavoriteBorder
-        )
+            HelpCard(
+                title = stringResource(R.string.saving_favourites),
+                desc = stringResource(R.string.tap_the_heart_icon_on_any_branch_to_save_it),
+                icon = Icons.Default.FavoriteBorder
+            )
 
-        HelpCard(
-            title = stringResource(R.string.getting_directions),
-            desc = stringResource(R.string.open_any_branch_and_tap_directions_to_navigate),
-            icon = Icons.Default.Directions
-        )
+            HelpCard(
+                title = stringResource(R.string.getting_directions),
+                desc = stringResource(R.string.open_any_branch_and_tap_directions_to_navigate),
+                icon = Icons.Default.Directions
+            )
 
-        SectionTitle(stringResource(R.string.still_need_help))
-        val context = LocalContext.current
-        HelpActionCard(
-            title = "Send Feedback",
-            subtitle = stringResource(R.string.help_us_improve_the_app),
-            icon = Icons.Default.Feedback
-        ) {
-            sendEmail(context)
+            SectionTitle(stringResource(R.string.still_need_help))
+            val context = LocalContext.current
+            HelpActionCard(
+                title = "Send Feedback",
+                subtitle = stringResource(R.string.help_us_improve_the_app),
+                icon = Icons.Default.Feedback
+            ) {
+                sendEmail(context)
+            }
         }
     }
 }

@@ -72,6 +72,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.sa.branchlocatormap.R
 import com.sa.branchlocatormap.domain.model.BankBranchDetail
+import com.sa.branchlocatormap.presentation.components.BaseInfoScaffoldScreen
 import com.sa.branchlocatormap.presentation.viewModel.BranchSharedViewModel
 import com.sa.branchlocatormap.presentation.viewModel.FavouritesViewModel
 import kotlinx.coroutines.delay
@@ -86,230 +87,233 @@ import java.util.Locale
 @Composable
 fun BranchDetailScreen(navController: NavController) {
 
-
-
-    // Shared ViewModel holding the currently selected branch
-    val sharedViewModel: BranchSharedViewModel = koinViewModel()
-
-    // ViewModel responsible for managing favourites in local storage
-    val favouritesViewModel: FavouritesViewModel = koinViewModel()
-
-    // Observing selected branch state
-    val selectedBranch by sharedViewModel.selectedBranch.collectAsState()
-
-    /**
-     * If no branch is selected, return to previous screen.
-     */
-    LaunchedEffect(Unit) {
-        if (selectedBranch == null) {
+    BaseInfoScaffoldScreen(
+        title = stringResource(R.string.branch_details),
+        onBackClick = {
             navController.popBackStack()
         }
-    }
-
-    val branch = selectedBranch ?: return
-
-    // Local UI state for favourite toggle
-    var isFavourite by remember { mutableStateOf(branch.isFavourite) }
-
-    /**
-     * Used to periodically refresh time-based UI logic
-     */
-    val currentTime = remember { mutableStateOf(Calendar.getInstance()) }
-
-    /**
-     * Updates current time every 60 seconds.
-     */
-    LaunchedEffect(Unit) {
-        while (true) {
-            currentTime.value = Calendar.getInstance()
-            delay(60_000)
-        }
-    }
-
-    /**
-     * Determines whether the branch is currently open
-     */
-    val isOpenNow = isBranchOpen(branch.openTime, branch.closeTime)
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
     ) {
 
+        // Shared ViewModel holding the currently selected branch
+        val sharedViewModel: BranchSharedViewModel = koinViewModel()
+
+        // ViewModel responsible for managing favourites in local storage
+        val favouritesViewModel: FavouritesViewModel = koinViewModel()
+
+        // Observing selected branch state
+        val selectedBranch by sharedViewModel.selectedBranch.collectAsState()
+
         /**
-         * Header section showing branch name, status, favourite button, and address.
+         * If no branch is selected, return to previous screen.
          */
-        Box(
+        LaunchedEffect(Unit) {
+            if (selectedBranch == null) {
+                navController.popBackStack()
+            }
+        }
+
+        val branch = selectedBranch ?: return@BaseInfoScaffoldScreen
+
+        // Local UI state for favourite toggle
+        var isFavourite by remember { mutableStateOf(branch.isFavourite) }
+
+        /**
+         * Used to periodically refresh time-based UI logic
+         */
+        val currentTime = remember { mutableStateOf(Calendar.getInstance()) }
+
+        /**
+         * Updates current time every 60 seconds.
+         */
+        LaunchedEffect(Unit) {
+            while (true) {
+                currentTime.value = Calendar.getInstance()
+                delay(60_000)
+            }
+        }
+
+        /**
+         * Determines whether the branch is currently open
+         */
+        val isOpenNow = isBranchOpen(branch.openTime, branch.closeTime)
+
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    Brush.verticalGradient(
-                        listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.primaryContainer
-                        )
-                    )
-                )
-                .padding(20.dp)
-                .statusBarsPadding()
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
 
-            Column {
-
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-
-                    Column(modifier = Modifier.weight(1f)) {
-
-                        Text(
-                            text = branch.name,
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
+            /**
+             * Header section showing branch name, status, favourite button, and address.
+             */
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.primaryContainer
+                            )
                         )
+                    )
+                    .padding(20.dp)
+            ) {
+                Column {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
 
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+
+                            Text(
+                                text = branch.name,
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            /**
+                             * Displays whether branch is open or closed.
+                             */
+                            StatusBadge(isOpenNow)
+                        }
 
                         /**
-                         * Displays whether branch is open or closed.
+                         * Favourite toggle button.
                          */
-                        StatusBadge(isOpenNow)
-                    }
+                        IconButton(
+                            onClick = {
+                                val newValue = !isFavourite
+                                isFavourite = newValue
 
-                    /**
-                     * Favourite toggle button.
-                     */
-                    IconButton(
-                        onClick = {
-                            val newValue = !isFavourite
-                            isFavourite = newValue
+                                val updatedBranch = branch.copy(isFavourite = newValue)
 
-                            val updatedBranch = branch.copy(isFavourite = newValue)
-
-                            if (newValue) {
-                                favouritesViewModel.addFavourite(updatedBranch)
-                            } else {
-                                favouritesViewModel.deleteFavourite(updatedBranch)
+                                if (newValue) {
+                                    favouritesViewModel.addFavourite(updatedBranch)
+                                } else {
+                                    favouritesViewModel.deleteFavourite(updatedBranch)
+                                }
                             }
+                        ) {
+                            Icon(
+                                imageVector = if (isFavourite)
+                                    Icons.Default.Favorite
+                                else
+                                    Icons.Default.FavoriteBorder,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = if (isFavourite)
-                                Icons.Default.Favorite
-                            else
-                                Icons.Default.FavoriteBorder,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
                     }
-                }
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = branch.address,
-                    color = Color.White.copy(alpha = 0.9f),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                DistancePill(branch.distance, isLight = true)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        /**
-         * Action buttons for directions and calling the branch.
-         */
-        ActionButtons(branch)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        /**
-         * Basic branch information section.
-         */
-        InfoCard {
-            Column {
-                DetailRow(Icons.Default.LocationOn, stringResource(R.string.address), branch.address)
-                DetailRow(Icons.Default.Phone, stringResource(R.string.phone), branch.phone)
-                DetailRow(
-                    Icons.Default.AccessTime,
-                    "Hours",
-                    "${branch.openTime} - ${branch.closeTime}"
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        /**
-         * Opening hours section.
-         */
-        InfoCard {
-            OpeningHoursSection(branch)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        /**
-         * Services offered by the branch.
-         */
-        InfoCard {
-
-            Column {
-
-                Text(
-                    stringResource(R.string.services),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                val services = branch.services
-
-                if (services.isEmpty()) {
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
-                        stringResource(R.string.no_services_available),
-                        color = Color.Gray,
-                        style = MaterialTheme.typography.bodySmall
+                        text = branch.address,
+                        color = Color.White.copy(alpha = 0.9f),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            /**
+             * Action buttons for directions and calling the branch.
+             */
+            ActionButtons(branch)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            /**
+             * Basic branch information section.
+             */
+            InfoCard {
+                Column {
+                    DetailRow(
+                        Icons.Default.LocationOn,
+                        stringResource(R.string.address),
+                        branch.address
+                    )
+                    DetailRow(Icons.Default.Phone, stringResource(R.string.phone), branch.phone)
+                    DetailRow(
+                        Icons.Default.AccessTime,
+                        "Hours",
+                        "${branch.openTime} - ${branch.closeTime}"
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            /**
+             * Opening hours section.
+             */
+            InfoCard {
+                OpeningHoursSection(branch)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            /**
+             * Services offered by the branch.
+             */
+            InfoCard {
+
+                Column {
+
+                    Text(
+                        stringResource(R.string.services),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
                     )
 
-                } else {
+                    Spacer(modifier = Modifier.height(14.dp))
 
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    val services = branch.services
 
-                        services.chunked(2).forEach { rowItems ->
+                    if (services.isEmpty()) {
 
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
+                        Text(
+                            stringResource(R.string.no_services_available),
+                            color = Color.Gray,
+                            style = MaterialTheme.typography.bodySmall
+                        )
 
-                                rowItems.forEach { service ->
-                                    ModernServiceTile(
-                                        text = service,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                }
+                    } else {
 
-                                if (rowItems.size == 1) {
-                                    Spacer(modifier = Modifier.weight(1f))
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+
+                            services.chunked(2).forEach { rowItems ->
+
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+
+                                    rowItems.forEach { service ->
+                                        ModernServiceTile(
+                                            text = service,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+
+                                    if (rowItems.size == 1) {
+                                        Spacer(modifier = Modifier.weight(1f))
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
+        }
     }
 }
 
