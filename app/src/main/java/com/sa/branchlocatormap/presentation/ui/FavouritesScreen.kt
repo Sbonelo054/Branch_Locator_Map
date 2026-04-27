@@ -15,10 +15,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -213,7 +217,13 @@ fun BankBranchItem(
     onBranchClick: (BankBranchDetail) -> Unit,
     branch: BankBranchDetail
 ) {
+    // ViewModel responsible for managing favourites in local storage
+    val favouritesViewModel: FavouritesViewModel = koinViewModel()
+
     val isOpenNow = isBranchOpen(branch.openTime, branch.closeTime)
+
+    // Local UI state for favourite toggle
+    var isFavourite by remember { mutableStateOf(branch.isFavourite) }
 
     Card(
         modifier = Modifier
@@ -236,14 +246,32 @@ fun BankBranchItem(
                     fontWeight = FontWeight.Bold
                 )
 
-                Text(
-                    text = if (isOpenNow) stringResource(R.string.open) else stringResource(R.string.closed),
-                    color = if (isOpenNow)
-                        Color(0xFF2E7D32)
-                    else
-                        MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.labelMedium
-                )
+                /**
+                 * Favourite toggle button.
+                 */
+                IconButton(
+                    onClick = {
+                        val newValue = !isFavourite
+                        isFavourite = newValue
+
+                        val updatedBranch = branch.copy(isFavourite = newValue)
+
+                        if (newValue) {
+                            favouritesViewModel.addFavourite(updatedBranch)
+                        } else {
+                            favouritesViewModel.deleteFavourite(updatedBranch)
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = if (isFavourite)
+                            Icons.Default.Favorite
+                        else
+                            Icons.Default.FavoriteBorder,
+                        contentDescription = null,
+                        tint = Color.Red
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(6.dp))
@@ -261,18 +289,14 @@ fun BankBranchItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
-                Surface(
-                    shape = MaterialTheme.shapes.extraLarge,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                ) {
-                    Text(
-                        text = branch.distance,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
+                Text(
+                    text = if (isOpenNow) stringResource(R.string.open) else stringResource(R.string.closed),
+                    color = if (isOpenNow)
+                        Color(0xFF2E7D32)
+                    else
+                        MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.labelMedium
+                )
 
                 Text(
                     text = stringResource(R.string.view_details),

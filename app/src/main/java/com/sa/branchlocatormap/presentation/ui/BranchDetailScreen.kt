@@ -205,7 +205,7 @@ fun BranchDetailScreen(navController: NavController) {
                                 else
                                     Icons.Default.FavoriteBorder,
                                 contentDescription = null,
-                                tint = Color.White
+                                tint = if (isFavourite) Color.Red else Color.White
                             )
                         }
                     }
