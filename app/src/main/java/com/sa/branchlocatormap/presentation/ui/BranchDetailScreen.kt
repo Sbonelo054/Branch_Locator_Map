@@ -15,6 +15,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.material.icons.filled.*
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -114,6 +115,21 @@ fun BranchDetailScreen(navController: NavController) {
 
         val branch = selectedBranch ?: return@BaseInfoScaffoldScreen
 
+        /**
+         * Android context used for system services.
+         */
+        val context = LocalContext.current
+
+        /**
+         * added to favourites message
+         */
+        val addedToFavourites = stringResource(R.string.added_to_favourites)
+
+        /**
+         * removed from favourites message
+         */
+        val removedFromFavourites = stringResource(R.string.removed_from_favourites)
+
         // Local UI state for favourite toggle
         var isFavourite by remember { mutableStateOf(branch.isFavourite) }
 
@@ -194,8 +210,11 @@ fun BranchDetailScreen(navController: NavController) {
 
                                 if (newValue) {
                                     favouritesViewModel.addFavourite(updatedBranch)
+                                    Toast.makeText(context, addedToFavourites, Toast.LENGTH_SHORT).show()
+
                                 } else {
                                     favouritesViewModel.deleteFavourite(updatedBranch)
+                                    Toast.makeText(context, removedFromFavourites, Toast.LENGTH_SHORT).show()
                                 }
                             }
                         ) {

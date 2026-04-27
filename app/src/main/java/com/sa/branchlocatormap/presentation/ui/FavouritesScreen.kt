@@ -1,6 +1,7 @@
 package com.sa.branchlocatormap.presentation.ui
 
 import android.location.Location
+import android.widget.Toast
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -217,13 +219,35 @@ fun BankBranchItem(
     onBranchClick: (BankBranchDetail) -> Unit,
     branch: BankBranchDetail
 ) {
-    // ViewModel responsible for managing favourites in local storage
+    /**
+     * ViewModel responsible for managing favourites in local storage
+     * */
     val favouritesViewModel: FavouritesViewModel = koinViewModel()
 
+    /**
+     * isOpenNow checks whether the branch is open or closed at the current time and date
+     */
     val isOpenNow = isBranchOpen(branch.openTime, branch.closeTime)
 
-    // Local UI state for favourite toggle
+    /**
+     * Android context used for system services.
+     */
+    val context = LocalContext.current
+
+    /**
+     * [isFavourite] checks whether the branch has been added to favourites or not
+     */
     var isFavourite by remember { mutableStateOf(branch.isFavourite) }
+
+    /**
+     * added to favourites message
+     */
+    val addedToFavourites = stringResource(R.string.added_to_favourites)
+
+    /**
+     * removed from favourites message
+     */
+    val removedFromFavourites = stringResource(R.string.removed_from_favourites)
 
     Card(
         modifier = Modifier
@@ -258,8 +282,10 @@ fun BankBranchItem(
 
                         if (newValue) {
                             favouritesViewModel.addFavourite(updatedBranch)
+                            Toast.makeText(context, addedToFavourites, Toast.LENGTH_SHORT).show()
                         } else {
                             favouritesViewModel.deleteFavourite(updatedBranch)
+                            Toast.makeText(context, removedFromFavourites, Toast.LENGTH_SHORT).show()
                         }
                     }
                 ) {
