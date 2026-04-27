@@ -52,6 +52,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -83,6 +84,8 @@ import com.sa.branchlocatormap.presentation.viewModel.BranchSharedViewModel
 import com.sa.branchlocatormap.presentation.viewModel.MapsViewModel
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationRequest
@@ -455,6 +458,10 @@ fun MapsScreen(
                 }
             }
 
+            var searchBarHeight by remember { mutableIntStateOf(0) }
+            val density = LocalDensity.current
+            val searchBarHeightDp = with(density) { searchBarHeight.toDp() }
+
             /**
              * Displays an "empty state" UI when:
              * - The user has entered a search query
@@ -467,8 +474,12 @@ fun MapsScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 24.dp),
-                    contentAlignment = Alignment.Center
+                        .padding(
+                        top = searchBarHeightDp + 24.dp,
+                        start = 24.dp,
+                        end = 24.dp
+                    ),
+                    contentAlignment = Alignment.TopCenter
                 ) {
 
                     Box(
@@ -515,6 +526,9 @@ fun MapsScreen(
                     .statusBarsPadding()
                     .padding(horizontal = 16.dp, vertical = 12.dp)
                     .align(Alignment.TopCenter)
+                    .onGloballyPositioned { coordinates ->
+                        searchBarHeight = coordinates.size.height
+                    }
             )
         }
     }
