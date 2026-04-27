@@ -34,16 +34,20 @@ import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -248,291 +252,411 @@ fun MapsScreen(
     }
 
     /**
-     * Bottom sheet state for nearby branches UI.
+     * [scaffoldState] keeps the state of the bottom sheet whether it's pulled up or pulled down
      */
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    /**
-     * Controls visibility of bottom sheet.
-     */
-    var showSheet by remember { mutableStateOf(false) }
-
-    /**
-     * Ensures bottom sheet is shown only once initially.
-     */
-    var hasShownSheet by remember { mutableStateOf(false) }
-
-    /**
-     * Triggers bottom sheet when nearby branches are available.
-     */
-    LaunchedEffect(nearbyBanks) {
-        if (nearbyBanks.isNotEmpty() && !hasShownSheet) {
-            showSheet = true
-            hasShownSheet = true
-        }
-    }
-
-    /**
-     * Root container for map + UI overlays.
-     */
-    Box(modifier = modifier.fillMaxSize()) {
-
-        /**
-         * Google Map displaying branch markers.
-         */
-        GoogleMap(
-            modifier = Modifier.matchParentSize(),
-            cameraPositionState = cameraPositionState,
-            properties = MapProperties(
-                isMyLocationEnabled = hasPermission
-            ),
-            uiSettings = MapUiSettings(
-                myLocationButtonEnabled = true
-            )
-        ) {
-
-            /**
-             * Custom marker icon for bank branches.
-             */
-            val markerIcon = remember {
-                createMarkerIcon(context, R.drawable.ic_bank)
-            }
-
-            /**
-             * Moves camera to first branch on initial load.
-             */
-            LaunchedEffect(filteredBranches.firstOrNull()) {
-                filteredBranches.firstOrNull()?.let {
-                    cameraPositionState.animate(
-                        CameraUpdateFactory.newLatLngZoom(
-                            LatLng(it.latitude, it.longitude),
-                            14f
-                        )
-                    )
-                }
-            }
-
-            /**
-             * Render markers for all searched bank branches.
-             */
-            filteredBranches.forEach { branch ->
-                Marker(
-                    state = MarkerState(
-                        position = LatLng(branch.latitude, branch.longitude)
-                    ),
-                    title = branch.name,
-                    snippet = branch.address,
-                    icon = markerIcon,
-                    onClick = {
-                        sharedViewModel.selectBranch(branch)
-                        navController.navigate(Screen.BRANCH_DETAIL)
-                        true
-                    }
-                )
-            }
-        }
-
-        /**
-         * Displays an "empty state" UI when:
-         * - The user has entered a search query
-         * - AND no matching bank branches are found
-         *
-         * This provides user feedback instead of showing a blank map,
-         * improving usability and search clarity.
-         */
-        if (searchQuery.isNotBlank() && filteredBranches.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .then(Modifier)
-                )
-
-                Card(
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = stringResource(R.string.no_branches_found),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.Black
-                        )
-
-                        Spacer(modifier = Modifier.height(6.dp))
-
-                        Text(
-                            text = stringResource(R.string.try_a_different_name_or_keyword),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.DarkGray
-                        )
-                    }
-                }
-            }
-        }
-
-        /**
-         * Search bar displayed on top of map.
-         */
-        BranchSearchBar(
-            query = searchQuery,
-            onQueryChange = { viewModel.onSearchQueryChange(it) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .align(Alignment.TopCenter)
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState(
+            initialValue = SheetValue.PartiallyExpanded
         )
+    )
 
-        /**
-         * Bottom sheet showing nearby branches.
-         */
-        if (showSheet && nearbyBanks.isNotEmpty()) {
+    BottomSheetScaffold(
+        scaffoldState = scaffoldState,
+        sheetPeekHeight = 120.dp,
+        sheetContent = {
 
-            ModalBottomSheet(
-                onDismissRequest = { showSheet = false },
-                sheetState = sheetState
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.nearby_branches),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                    )
+                Text(
+                    text = stringResource(R.string.nearby_branches),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
-                    /**
-                     * List of nearby branch cards.
-                     */
-                    nearbyBanks.forEach { branch ->
-                        Card(
+                /**
+                 * A list of 3 nearby branches
+                 */
+                nearbyBanks.forEach { branch ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .clickable {
+                                sharedViewModel.selectBranch(branch)
+                                navController.navigate(Screen.BRANCH_DETAIL)
+                            },
+                        shape = RoundedCornerShape(14.dp)
+                    ) {
+
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                                .clickable {
-                                    sharedViewModel.selectBranch(branch)
-                                    navController.navigate(Screen.BRANCH_DETAIL)
-                                    showSheet = false
-                                },
-                            shape = RoundedCornerShape(14.dp)
+                                .padding(14.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-
-                            Row(
+                            Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(14.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                    .size(42.dp),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(42.dp),
-                                    contentAlignment = Alignment.Center
+                                Icon(
+                                    imageVector = Icons.Default.AccountBalance,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(12.dp))
+
+                            Column(modifier = Modifier.weight(1f)) {
+
+                                Text(
+                                    text = branch.name,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.AccountBalance,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.width(12.dp))
-
-                                Column(modifier = Modifier.weight(1f)) {
-
-                                    Text(
-                                        text = branch.name,
-                                        style = MaterialTheme.typography.titleSmall,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-
-                                    Spacer(modifier = Modifier.height(6.dp))
-
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Place,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(14.dp),
-                                                tint = Color.Gray
-                                            )
+                                        Icon(
+                                            imageVector = Icons.Default.Place,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(14.dp),
+                                            tint = Color.Gray
+                                        )
 
-                                            Spacer(modifier = Modifier.width(4.dp))
+                                        Spacer(modifier = Modifier.width(4.dp))
 
-                                            Column{
-                                                if(currentLocation != null) {
-                                                    val results = FloatArray(1)
-                                                    Location.distanceBetween(
-                                                        currentLocation?.latitude?: return@Column,
-                                                        currentLocation?.longitude?: return@Column,
-                                                        branch.latitude,
-                                                        branch.longitude,
-                                                        results
-                                                    )
-                                                    Text(
-                                                        text = String.format("%.2f Km", results[0] / 1000),
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        color = Color.Gray
-                                                    )
-                                                }
+                                        Column{
+                                            if(currentLocation != null) {
+                                                val results = FloatArray(1)
+                                                Location.distanceBetween(
+                                                    currentLocation?.latitude?: return@Column,
+                                                    currentLocation?.longitude?: return@Column,
+                                                    branch.latitude,
+                                                    branch.longitude,
+                                                    results
+                                                )
+                                                Text(
+                                                    text = String.format("%.2f Km", results[0] / 1000),
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = Color.Gray
+                                                )
                                             }
                                         }
+                                    }
 
-                                        Spacer(modifier = Modifier.width(12.dp))
-                                        val isOpenNow = isBranchOpen(branch.openTime, branch.closeTime)
-                                        Surface(
-                                            shape = RoundedCornerShape(50),
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    val isOpenNow = isBranchOpen(branch.openTime, branch.closeTime)
+                                    Surface(
+                                        shape = RoundedCornerShape(50),
+                                        color = if (isOpenNow)
+                                            Color(0xFFE8F5E9)
+                                        else
+                                            Color(0xFFFFEBEE)
+                                    ) {
+                                        /**
+                                         * Determines whether the branch is currently open
+                                         */
+
+                                        Text(
+                                            text = if (isOpenNow) stringResource(R.string.open) else stringResource(R.string.closed),
+                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                            style = MaterialTheme.typography.labelSmall,
                                             color = if (isOpenNow)
-                                                Color(0xFFE8F5E9)
+                                                Color(0xFF2E7D32)
                                             else
-                                                Color(0xFFFFEBEE)
-                                        ) {
-                                            /**
-                                             * Determines whether the branch is currently open
-                                             */
-
-                                            Text(
-                                                text = if (isOpenNow) stringResource(R.string.open) else stringResource(R.string.closed),
-                                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = if (isOpenNow)
-                                                    Color(0xFF2E7D32)
-                                                else
-                                                    Color(0xFFC62828)
-                                            )
-                                        }
+                                                Color(0xFFC62828)
+                                        )
                                     }
                                 }
-
-                                Icon(
-                                    imageVector = Icons.Default.ChevronRight,
-                                    contentDescription = null,
-                                    tint = Color.Gray
-                                )
                             }
+
+                            Icon(
+                                imageVector = Icons.Default.ChevronRight,
+                                contentDescription = null,
+                                tint = Color.Gray
+                            )
                         }
                     }
                 }
             }
+        }
+    ){
+        /**
+         * Root container for map + UI overlays.
+         */
+        Box(modifier = modifier.fillMaxSize()) {
+
+            /**
+             * Google Map displaying branch markers.
+             */
+            GoogleMap(
+                modifier = Modifier.matchParentSize(),
+                cameraPositionState = cameraPositionState,
+                properties = MapProperties(
+                    isMyLocationEnabled = hasPermission
+                ),
+                uiSettings = MapUiSettings(
+                    myLocationButtonEnabled = true
+                )
+            ) {
+
+                /**
+                 * Custom marker icon for bank branches.
+                 */
+                val markerIcon = remember {
+                    createMarkerIcon(context, R.drawable.ic_bank)
+                }
+
+                /**
+                 * Moves camera to first branch on initial load.
+                 */
+                LaunchedEffect(filteredBranches.firstOrNull()) {
+                    filteredBranches.firstOrNull()?.let {
+                        cameraPositionState.animate(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(it.latitude, it.longitude),
+                                14f
+                            )
+                        )
+                    }
+                }
+
+                /**
+                 * Render markers for all searched bank branches.
+                 */
+                filteredBranches.forEach { branch ->
+                    Marker(
+                        state = MarkerState(
+                            position = LatLng(branch.latitude, branch.longitude)
+                        ),
+                        title = branch.name,
+                        snippet = branch.address,
+                        icon = markerIcon,
+                        onClick = {
+                            sharedViewModel.selectBranch(branch)
+                            navController.navigate(Screen.BRANCH_DETAIL)
+                            true
+                        }
+                    )
+                }
+            }
+
+            /**
+             * Displays an "empty state" UI when:
+             * - The user has entered a search query
+             * - AND no matching bank branches are found
+             *
+             * This provides user feedback instead of showing a blank map,
+             * improving usability and search clarity.
+             */
+            if (searchQuery.isNotBlank() && filteredBranches.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .then(Modifier)
+                    )
+
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = stringResource(R.string.no_branches_found),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.Black
+                            )
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            Text(
+                                text = stringResource(R.string.try_a_different_name_or_keyword),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.DarkGray
+                            )
+                        }
+                    }
+                }
+            }
+
+            /**
+             * Search bar displayed on top of map.
+             */
+            BranchSearchBar(
+                query = searchQuery,
+                onQueryChange = { viewModel.onSearchQueryChange(it) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .align(Alignment.TopCenter)
+            )
+
+            /**
+             * Bottom sheet showing nearby branches.
+             */
+//        if (showSheet && nearbyBanks.isNotEmpty()) {
+//
+//            ModalBottomSheet(
+//                onDismissRequest = { showSheet = false },
+//                sheetState = sheetState
+//            ) {
+//
+//                Column(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp)
+//                ) {
+//                    Text(
+//                        text = stringResource(R.string.nearby_branches),
+//                        style = MaterialTheme.typography.titleMedium,
+//                        fontWeight = FontWeight.SemiBold,
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(6.dp))
+//
+//                    /**
+//                     * List of nearby branch cards.
+//                     */
+//                    nearbyBanks.forEach { branch ->
+//                        Card(
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(vertical = 8.dp)
+//                                .clickable {
+//                                    sharedViewModel.selectBranch(branch)
+//                                    navController.navigate(Screen.BRANCH_DETAIL)
+//                                    showSheet = false
+//                                },
+//                            shape = RoundedCornerShape(14.dp)
+//                        ) {
+//
+//                            Row(
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .padding(14.dp),
+//                                verticalAlignment = Alignment.CenterVertically
+//                            ) {
+//                                Box(
+//                                    modifier = Modifier
+//                                        .size(42.dp),
+//                                    contentAlignment = Alignment.Center
+//                                ) {
+//                                    Icon(
+//                                        imageVector = Icons.Default.AccountBalance,
+//                                        contentDescription = null,
+//                                        tint = MaterialTheme.colorScheme.primary
+//                                    )
+//                                }
+//
+//                                Spacer(modifier = Modifier.width(12.dp))
+//
+//                                Column(modifier = Modifier.weight(1f)) {
+//
+//                                    Text(
+//                                        text = branch.name,
+//                                        style = MaterialTheme.typography.titleSmall,
+//                                        fontWeight = FontWeight.SemiBold
+//                                    )
+//
+//                                    Spacer(modifier = Modifier.height(6.dp))
+//
+//                                    Row(
+//                                        verticalAlignment = Alignment.CenterVertically
+//                                    ) {
+//                                        Row(
+//                                            verticalAlignment = Alignment.CenterVertically
+//                                        ) {
+//                                            Icon(
+//                                                imageVector = Icons.Default.Place,
+//                                                contentDescription = null,
+//                                                modifier = Modifier.size(14.dp),
+//                                                tint = Color.Gray
+//                                            )
+//
+//                                            Spacer(modifier = Modifier.width(4.dp))
+//
+//                                            Column{
+//                                                if(currentLocation != null) {
+//                                                    val results = FloatArray(1)
+//                                                    Location.distanceBetween(
+//                                                        currentLocation?.latitude?: return@Column,
+//                                                        currentLocation?.longitude?: return@Column,
+//                                                        branch.latitude,
+//                                                        branch.longitude,
+//                                                        results
+//                                                    )
+//                                                    Text(
+//                                                        text = String.format("%.2f Km", results[0] / 1000),
+//                                                        style = MaterialTheme.typography.labelSmall,
+//                                                        color = Color.Gray
+//                                                    )
+//                                                }
+//                                            }
+//                                        }
+//
+//                                        Spacer(modifier = Modifier.width(12.dp))
+//                                        val isOpenNow = isBranchOpen(branch.openTime, branch.closeTime)
+//                                        Surface(
+//                                            shape = RoundedCornerShape(50),
+//                                            color = if (isOpenNow)
+//                                                Color(0xFFE8F5E9)
+//                                            else
+//                                                Color(0xFFFFEBEE)
+//                                        ) {
+//                                            /**
+//                                             * Determines whether the branch is currently open
+//                                             */
+//
+//                                            Text(
+//                                                text = if (isOpenNow) stringResource(R.string.open) else stringResource(R.string.closed),
+//                                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+//                                                style = MaterialTheme.typography.labelSmall,
+//                                                color = if (isOpenNow)
+//                                                    Color(0xFF2E7D32)
+//                                                else
+//                                                    Color(0xFFC62828)
+//                                            )
+//                                        }
+//                                    }
+//                                }
+//
+//                                Icon(
+//                                    imageVector = Icons.Default.ChevronRight,
+//                                    contentDescription = null,
+//                                    tint = Color.Gray
+//                                )
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
         }
     }
 }
