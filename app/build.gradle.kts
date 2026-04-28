@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.compose.compiler)
     kotlin("plugin.parcelize")
-    //alias(libs.plugins.org.jetbrains.kotlin.kapt)
 }
 
 android {
@@ -76,6 +75,16 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.play.services.location)
     implementation(libs.koin.androidx.compose)
+
+    // Kotest
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.assertions.core)
+
+    // MockK
+    testImplementation(libs.mockk)
+
+    // Coroutines test
+    testImplementation(libs.kotlinx.coroutines.test)
 
     implementation(libs.maps.compose)
     implementation(libs.androidx.navigation.compose)

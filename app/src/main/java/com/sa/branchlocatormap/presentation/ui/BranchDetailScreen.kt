@@ -487,7 +487,7 @@ fun OpeningHoursSection(branch: BankBranchDetail) {
         OpeningHourRow(stringResource(R.string.mon_fri), "${branch.openTime} - ${branch.closeTime}", false)
         OpeningHourRow(stringResource(R.string.saturday),
             stringResource(R.string._09_00_13_00), false)
-        OpeningHourRow(stringResource(R.string.sunday), stringResource(R.string.closed), false)
+        OpeningHourRow(stringResource(R.string.sunday_holidays), stringResource(R.string.closed), false)
     }
 }
 
