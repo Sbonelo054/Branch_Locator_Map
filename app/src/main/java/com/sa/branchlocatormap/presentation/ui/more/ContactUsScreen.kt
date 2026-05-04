@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
@@ -70,7 +69,7 @@ fun ContactUsScreen(navController: NavController) {
 
             ContactRow(Icons.Default.Email,
                 stringResource(R.string.email),
-                stringResource(R.string.clientcare_capitecbank_co_za)
+                stringResource(R.string.email_address_capitecbank_co_za)
             )
             ContactRow(Icons.Default.Call, stringResource(R.string.phone),
                 stringResource(R.string._27_860_66_77_18)

@@ -28,6 +28,47 @@ class BankBranchLocalDataSource {
      */
     val bankBranches = listOf(
         BankBranchDetail(
+            name = "Stellenbosch Main Branch",
+            distance = "~50 km",
+            address = "23 Andringa St, Stellenbosch",
+            isOpen = false,
+            openTime = "08:00",
+            closeTime = "17:00",
+            isFavourite = false,
+            phone = "021 808 9100",
+            services = listOf("ATM", "Banking", "Loans", "Forex"),
+            latitude = -33.9346,
+            longitude = 18.8602
+        ),
+
+        BankBranchDetail(
+            name = "Stellenbosch Mall Branch",
+            distance = "~52 km",
+            address = "Eikestad Mall, 43 Andringa St, Stellenbosch",
+            isOpen = false,
+            openTime = "09:00",
+            closeTime = "18:00",
+            isFavourite = false,
+            phone = "021 887 2234",
+            services = listOf("ATM", "Banking", "Account Opening"),
+            latitude = -33.9360,
+            longitude = 18.8570
+        ),
+
+        BankBranchDetail(
+            name = "Techno Park Stellenbosch",
+            distance = "~55 km",
+            address = "Techno Park, Stellenbosch",
+            isOpen = false,
+            openTime = "08:30",
+            closeTime = "16:30",
+            isFavourite = false,
+            phone = "021 880 4501",
+            services = listOf("ATM", "Business Banking", "Loans"),
+            latitude = -33.9465,
+            longitude = 18.8355
+        ),
+        BankBranchDetail(
             name = "Canal Walk, Cape Town",
             distance = "~1,400 km",
             address = "Shop 171, Canal Walk Shopping Centre, Century City, Century Blvd, Cape Town",

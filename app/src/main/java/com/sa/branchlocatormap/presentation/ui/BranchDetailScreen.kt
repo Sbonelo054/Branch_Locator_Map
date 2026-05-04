@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
@@ -340,40 +341,16 @@ fun BranchDetailScreen(navController: NavController) {
  * Displays open/closed status badge.
  */
 @Composable
-fun StatusBadge(isOpen: Boolean) {
+fun StatusBadge(isOpen: Boolean = true) {
     Surface(
         shape = MaterialTheme.shapes.extraLarge,
-        color = if (isOpen)
-            Color(0xFF00C853).copy(alpha = 0.2f)
-        else
-            Color.Red.copy(alpha = 0.2f)
+        color = Color(0xFF00C853).copy(alpha = 0.2f)
     ) {
         Text(
             text = if (isOpen) stringResource(R.string.open_now) else stringResource(R.string.closed),
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
             color = Color.White,
             style = MaterialTheme.typography.labelMedium
-        )
-    }
-}
-
-/**
- * Displays distance in a styled pill UI.
- */
-@Composable
-fun DistancePill(distance: String, isLight: Boolean = false) {
-    Surface(
-        shape = MaterialTheme.shapes.extraLarge,
-        color = if (isLight)
-            Color.White.copy(alpha = 0.2f)
-        else
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-    ) {
-        Text(
-            text = distance,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            color = if (isLight) Color.White else MaterialTheme.colorScheme.primary,
-            style = MaterialTheme.typography.labelSmall
         )
     }
 }
@@ -512,10 +489,7 @@ fun OpeningHourRow(day: String, time: String, highlight: Boolean) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(day, fontWeight = if (highlight) FontWeight.SemiBold else FontWeight.Normal)
-        Text(
-            time,
-            color = if (highlight) MaterialTheme.colorScheme.primary else Color.Gray
-        )
+        Text(time, fontWeight = if (highlight) FontWeight.SemiBold else FontWeight.Normal)
     }
 }
 
@@ -561,7 +535,7 @@ fun ModernServiceTile(
                 modifier = Modifier
                     .size(36.dp)
                     .background(
-                        MaterialTheme.colorScheme.primaryContainer,
+                        Color.Transparent,
                         MaterialTheme.shapes.small
                     ),
                 contentAlignment = Alignment.Center

@@ -16,8 +16,8 @@ class BankRepositoryTest : FunSpec({
     val branches = listOf(
         BankBranchDetail(
             id = 1,
-            name = "Branch A",
-            address = "Address A",
+            name = "Sandton Branch",
+            address = "Sandton Branch",
             latitude = 1.0,
             longitude = 1.0
         )
@@ -30,17 +30,15 @@ class BankRepositoryTest : FunSpec({
     }
 
     test("branches") {
-        // Assert initial state after init block
         repository.branches.value shouldBe branches
     }
 
     test("loadBranches") {
-        // Arrange
         val newBranches = listOf(
             BankBranchDetail(
                 id = 2,
-                name = "Branch B",
-                address = "Address B",
+                name = "Sandton Branch",
+                address = "Sandton Branch",
                 latitude = 2.0,
                 longitude = 2.0
             )
@@ -48,10 +46,8 @@ class BankRepositoryTest : FunSpec({
 
         every { localDataSource.bankBranches } returns newBranches
 
-        // Act
         repository.loadBranches()
 
-        // Assert
         repository.branches.value shouldBe newBranches
     }
 })

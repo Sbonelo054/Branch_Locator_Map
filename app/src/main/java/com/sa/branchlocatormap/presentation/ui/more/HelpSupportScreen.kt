@@ -109,7 +109,7 @@ fun HelpSupportScreen(navController: NavController) {
  */
 fun sendEmail(context: Context) {
     val uri = Uri.parse(
-            "mailto:ClientCare@capitecbank.co.za?subject=" +
+            "mailto:stellenbosch.main@capitecbank.co.za?subject=" +
                     "${Uri.encode("Support Request")}")
 
     val intent = Intent(Intent.ACTION_SENDTO, uri)

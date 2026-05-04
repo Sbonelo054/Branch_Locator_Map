@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -47,47 +48,49 @@ import com.sa.branchlocatormap.presentation.navigation.MoreNavHost
 @Composable
 fun MoreScreen(navController: NavController) {
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.more),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-
-            SectionTitle("Support")
-            MoreItem("Help & Support", Icons.Default.HelpOutline) {
-                navController.navigate(MoreNavHost.HELP_SUPPORT)
-            }
-            MoreItem("Contact Us", Icons.Default.Email) {
-                navController.navigate(MoreNavHost.CONTACT_US)
-            }
-            MoreItem("Send Feedback", Icons.Default.Feedback) {
-                navController.navigate(MoreNavHost.FEEDBACK)
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.more),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
 
-            SectionTitle("About")
-            MoreItem("Company Info", Icons.Default.Business) {
-                navController.navigate(MoreNavHost.COMPANY_INFO)
-            }
-            MoreItem("Privacy Policy", Icons.Default.Security) {
-                navController.navigate(MoreNavHost.PRIVACY_POLICY)
-            }
-            MoreItem("Terms of Service", Icons.Default.Description) {
-                navController.navigate(MoreNavHost.TERMS)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+
+                SectionTitle(stringResource(R.string.support))
+                MoreItem(stringResource(R.string.help_support), Icons.Default.HelpOutline) {
+                    navController.navigate(MoreNavHost.HELP_SUPPORT)
+                }
+                MoreItem(stringResource(R.string.contact_us), Icons.Default.Email) {
+                    navController.navigate(MoreNavHost.CONTACT_US)
+                }
+                MoreItem(stringResource(R.string.send_feedback), Icons.Default.Feedback) {
+                    navController.navigate(MoreNavHost.FEEDBACK)
+                }
+
+                SectionTitle(stringResource(R.string.about))
+                MoreItem(stringResource(R.string.company_info), Icons.Default.Business) {
+                    navController.navigate(MoreNavHost.COMPANY_INFO)
+                }
+                MoreItem(stringResource(R.string.privacy_policy), Icons.Default.Security) {
+                    navController.navigate(MoreNavHost.PRIVACY_POLICY)
+                }
+                MoreItem(stringResource(R.string.terms_of_service), Icons.Default.Description) {
+                    navController.navigate(MoreNavHost.TERMS)
+                }
             }
         }
     }

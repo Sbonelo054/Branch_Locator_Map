@@ -26,8 +26,8 @@ class FavouritesRepositoryTest : FunSpec({
         runTest {
             val branch = BankBranchDetail(
                 id = 1,
-                name = "Test Branch",
-                address = "Test Address",
+                name = "Sandton Branch",
+                address = "Sandton Branch",
                 latitude = 0.0,
                 longitude = 0.0
             )
@@ -46,8 +46,8 @@ class FavouritesRepositoryTest : FunSpec({
             val branches = listOf(
                 BankBranchDetail(
                     id = 1,
-                    name = "Branch A",
-                    address = "Address A",
+                    name = "Sandton Branch",
+                    address = "Sandton Branch",
                     latitude = 1.0,
                     longitude = 1.0
                 )
