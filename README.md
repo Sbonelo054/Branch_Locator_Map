@@ -24,15 +24,15 @@ A modern Android application that helps users find nearby bank branches, view de
 map_screenmap_searchbranch_detailsfavouritesempty_favouritesmore_screen
 
 
-<img width="720" height="1600" alt="1000132998" src="https://github.com/user-attachments/assets/99a5a66c-3fa5-4e37-9e3a-4671b0c41913" />
+<img width="360" height="800" alt="1000132998" src="https://github.com/user-attachments/assets/99a5a66c-3fa5-4e37-9e3a-4671b0c41913" />
 
-<img width="720" height="1600" alt="1000132991" src="https://github.com/user-attachments/assets/fb9ce5b5-7e58-40aa-8dcf-0bfc76468331" />
+<img width="360" height="800" alt="1000132991" src="https://github.com/user-attachments/assets/fb9ce5b5-7e58-40aa-8dcf-0bfc76468331" />
 
-<img width="720" height="1600" alt="1000132996" src="https://github.com/user-attachments/assets/0064aa1a-c21b-440a-9265-48a60ccca94b" />
+<img width="360" height="800" alt="1000132996" src="https://github.com/user-attachments/assets/0064aa1a-c21b-440a-9265-48a60ccca94b" />
 
-<img width="720" height="1600" alt="1000132995" src="https://github.com/user-attachments/assets/5f37f4f0-1101-4c78-a76d-4cfdf0676d4a" />
+<img width="360" height="800" alt="1000132995" src="https://github.com/user-attachments/assets/5f37f4f0-1101-4c78-a76d-4cfdf0676d4a" />
 
-<img width="720" height="1600" alt="1000132997" src="https://github.com/user-attachments/assets/3fbcbe60-27da-4f97-8c9a-88b10143610f" />
+<img width="360" height="800" alt="1000132997" src="https://github.com/user-attachments/assets/3fbcbe60-27da-4f97-8c9a-88b10143610f" />
 
 <img width="720" height="1600" alt="1000132999" src="https://github.com/user-attachments/assets/7f07b025-e276-4bfd-ba49-11a6234a20de" />
 
