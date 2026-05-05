@@ -1,44 +1,47 @@
-package com.sa.branchlocatormap
+package com.sa.branchlocatormap.data.repository
 
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 import com.sa.branchlocatormap.data.dataSource.BankBranchLocalDataSource
-import com.sa.branchlocatormap.data.repository.BankRepository
 import com.sa.branchlocatormap.domain.model.BankBranchDetail
-import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.jupiter.api.BeforeEach
 
-class BankRepositoryTest : FunSpec({
+class BankRepositoryTest {
 
-    lateinit var localDataSource: BankBranchLocalDataSource
-    lateinit var repository: BankRepository
+    private lateinit var localDataSource: BankBranchLocalDataSource
+    private lateinit var repository: BankRepository
 
-    val branches = listOf(
+    private val branches = listOf(
         BankBranchDetail(
             id = 1,
             name = "Sandton Branch",
-            address = "Sandton Branch",
+            address = "Sandton",
             latitude = 1.0,
             longitude = 1.0
         )
     )
 
-    beforeTest {
+    @BeforeEach
+    fun setup() {
         localDataSource = mockk()
         every { localDataSource.bankBranches } returns branches
         repository = BankRepository(localDataSource)
     }
 
-    test("branches") {
-        repository.branches.value shouldBe branches
+    @Test
+    fun `branches should return data`() {
+        assertEquals(branches, repository.branches.value)
     }
 
-    test("loadBranches") {
+    @Test
+    fun `loadBranches should update state`() {
         val newBranches = listOf(
             BankBranchDetail(
                 id = 2,
-                name = "Sandton Branch",
-                address = "Sandton Branch",
+                name = "Rosebank Branch",
+                address = "Rosebank",
                 latitude = 2.0,
                 longitude = 2.0
             )
@@ -48,6 +51,6 @@ class BankRepositoryTest : FunSpec({
 
         repository.loadBranches()
 
-        repository.branches.value shouldBe newBranches
+        assertEquals(newBranches, repository.branches.value)
     }
-})
+}
