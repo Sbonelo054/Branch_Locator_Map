@@ -31,7 +31,7 @@ interface BranchLocatorDao {
      * Notes:
      * - Marked as `suspend` because database operations should not run on the main thread.
      */
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveFavourite(bankBranchDetail: BankBranchDetail)
 
     /**

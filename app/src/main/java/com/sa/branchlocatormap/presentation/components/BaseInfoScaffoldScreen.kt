@@ -81,7 +81,6 @@ fun BaseInfoScaffoldScreen(
             )
         }
 
-        // Content area
         Column(
             modifier = Modifier
                 .fillMaxSize()

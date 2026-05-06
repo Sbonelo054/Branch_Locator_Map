@@ -66,7 +66,6 @@ abstract class BranchLocatorDatabase : RoomDatabase() {
                     /**
                      * Clears and recreates the database if a migration is missing.
                      *
-                     * ⚠️ WARNING:
                      * This will delete all stored data on version changes.
                      * Safe for development, risky for production.
                      */
@@ -95,11 +94,6 @@ abstract class BranchLocatorDatabase : RoomDatabase() {
          * - onOpen()
          */
         private val callback: Callback = object : Callback() {
-            // Example:
-            // override fun onCreate(db: SupportSQLiteDatabase) {
-            //     super.onCreate(db)
-            //     // Pre-populate database here
-            // }
         }
     }
 }

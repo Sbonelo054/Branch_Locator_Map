@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
  *
  * It acts as a bridge between:
  * - IFavouritesRepository (data layer)
- * - UI (Compose / XML screens)
+ * - UI (Compose screens)
  *
  * Responsibilities:
  * - Observing favourite branches in real time
