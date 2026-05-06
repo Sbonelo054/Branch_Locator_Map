@@ -164,8 +164,9 @@ Filters branches by name using reactive StateFlow:
 * Fused Location Provider API
 * Kotlin Coroutines & Flow
 * MVVM Architecture
+* Room Database
 * Koin (Dependency Injection)
-* JUnit 5 + Coroutines Test + Flow, MockK (Unit Testing)
+* JUnit 5 + Coroutines Test + Flow + MockK (Unit Testing)
 ---
 
 ## Building the Project
