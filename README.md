@@ -169,8 +169,8 @@ Filters branches by name using reactive StateFlow:
 * Kotlin Coroutines & Flow
 * MVVM Architecture
 * Koin (Dependency Injection)
-* MockK (Unit Testing)
-* Kotest
+* JUnit 5 + Coroutines Test + Flow, MockK (Unit Testing)
+
 
 ---
 
