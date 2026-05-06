@@ -35,12 +35,6 @@ map_screenmap_searchbranch_detailsfavouritesempty_favouritesmore_screen
 <img width="360" height="800" alt="1000132997" src="https://github.com/user-attachments/assets/3fbcbe60-27da-4f97-8c9a-88b10143610f" />
 
 <img width="720" height="1600" alt="1000132999" src="https://github.com/user-attachments/assets/7f07b025-e276-4bfd-ba49-11a6234a20de" />
-
-
-
-
-
-
 ---
 
 ## Map Screen
@@ -168,6 +162,7 @@ Filters branches by name using reactive StateFlow:
 * Fused Location Provider API
 * Kotlin Coroutines & Flow
 * MVVM Architecture
+* Room Database
 * Koin (Dependency Injection)
 * JUnit 5 + Coroutines Test + Flow, MockK (Unit Testing)
 
