@@ -37,10 +37,6 @@ map_screenmap_searchbranch_detailsfavouritesempty_favouritesmore_screen
 <img width="360" height="800" alt="1000132999" src="https://github.com/user-attachments/assets/7f07b025-e276-4bfd-ba49-11a6234a20de" />
 
 
-
-
-
-
 ---
 
 ## Map Screen
@@ -169,9 +165,7 @@ Filters branches by name using reactive StateFlow:
 * Kotlin Coroutines & Flow
 * MVVM Architecture
 * Koin (Dependency Injection)
-* MockK (Unit Testing)
-* Kotest
-
+* JUnit 5 + Coroutines Test + Flow, MockK (Unit Testing)
 ---
 
 ## Building the Project
